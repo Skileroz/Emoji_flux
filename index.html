@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Emoji Flux — Online & Big Wins</title>
+  <title>Emoji Flux — Online & Big Wins (fixed)</title>
   <style>
     :root{
       --bg1:#071029; --bg2:#0f1724; --card:rgba(255,255,255,0.02);
@@ -28,6 +28,8 @@
     .slot.win{box-shadow:0 18px 56px rgba(255,200,90,0.14); transform:scale(1.06); filter:brightness(1.12)}
     .top-controls{display:flex;gap:12px;align-items:center;width:100%;justify-content:space-between}
     .score{font-weight:700;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    .score.pop{animation:pop .6s cubic-bezier(.2,.9,.3,1)}
+    @keyframes pop{0%{transform:scale(.85);opacity:0}50%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
     .aside-section{background:var(--card);padding:12px;border-radius:10px;margin-bottom:12px}
     .bigwins-list{max-height:260px;overflow:auto;padding:8px 6px}
     .bigwin-item{padding:8px;border-bottom:1px solid rgba(255,255,255,0.02);display:flex;justify-content:space-between;gap:8px;align-items:center}
@@ -35,7 +37,7 @@
     .bigwin-emoji{font-size:18px}
     .bigwin-nick{font-weight:700}
     .bigwin-amount{color:var(--accent)}
-    .online-counter{font-weight:700;color:var(--accent-2)}
+    .online-counter{font-weight:700;color:var(--accent-2, #6ee7b7)}
     .flash{position:fixed;inset:0;pointer-events:none;z-index:90;background:var(--flash-color);opacity:0;transition:opacity .18s}
     canvas#confetti{position:fixed;left:0;top:0;pointer-events:none;z-index:80}
     @media (max-width:980px){main{flex-direction:column} aside{width:100%}}
@@ -90,9 +92,7 @@
           <div style="font-weight:700">Большие выигрыши</div>
           <button id="clearBigWins" style="background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px;border-radius:8px;color:var(--muted)">Очистить</button>
         </div>
-        <div class="bigwins-list" id="bigWinsList">
-          <!-- items -->
-        </div>
+        <div class="bigwins-list" id="bigWinsList"></div>
       </div>
 
       <div class="aside-section">
@@ -103,30 +103,28 @@
   </main>
 
   <script>
-  // --- CONFIG: If you want real online counter and shared big wins, paste your Firebase config below ---
+  // ========== CONFIG ==========
   const firebaseConfig = {
     apiKey: "YOUR_KEY",
     authDomain: "YOUR_PROJECT.firebaseapp.com",
     databaseURL: "https://YOUR_PROJECT.firebaseio.com",
     projectId: "YOUR_PROJECT_ID",
   };
-  // --------------------------------------------------------------------------------------------
 
-  // Game config
   const EMOJI_POOL = ['🔥','⚡️','💧','🍀','🌟','🎯','🍎','💎','🌊','☄️','✨','🎵','🎲'];
   const ROWS = 3, COLS = 3, SLOT_COUNT = ROWS * COLS;
   const STARTER_BONUS = 100;
   const START_BALANCE_DEFAULT = 100;
   const CASHBACK_RATE_PER_DAY = 0.10;
   const CASHBACK_INTERVAL_MS = 60 * 1000;
+  const AUTO_TOPUP_MIN = 50;
   const DYN_MULT = { low:0.6, normal:1.0, high:1.8 };
   const LINE_MULT = { 3:3.0, 2:0.6, 1:0.0 };
 
-  // Big win criteria
-  const BIG_WIN_NET_MIN = 100;      // net gain at least this
-  const BIG_WIN_MULT_MIN = 4.0;     // or multiplier at least this
+  const BIG_WIN_NET_MIN = 100;
+  const BIG_WIN_MULT_MIN = 4.0;
 
-  // DOM
+  // ========== DOM ==========
   const gridEl = document.getElementById('grid');
   const nickInput = document.getElementById('nick');
   const dynSelect = document.getElementById('dynSelect');
@@ -147,13 +145,13 @@
   const flashEl = document.getElementById('flash');
   const confettiCanvas = document.getElementById('confetti');
 
-  // state
+  // ========== STATE ==========
   let nick = localStorage.getItem('nick') || 'NewPlayer';
   nickInput.value = nick;
   let dyn = localStorage.getItem('dyn') || 'normal';
   dynSelect.value = dyn;
 
-  // balance persisted robustly
+  // balance (robust)
   let balance;
   const storedBalance = localStorage.getItem('balance');
   if (storedBalance !== null) {
@@ -162,12 +160,11 @@
   } else {
     balance = START_BALANCE_DEFAULT;
   }
-  // starter bonus once
+
   if (!localStorage.getItem('starterClaimed')) {
     balance = (Number(balance) || 0) + STARTER_BONUS;
-    localStorage.setItem('balance', String(balance));
-    localStorage.setItem('starterClaimed', '1');
-    // small welcome
+    try { localStorage.setItem('balance', String(balance)); } catch(e){}
+    try { localStorage.setItem('starterClaimed','1'); } catch(e){}
     alert(`Бонус: +${STARTER_BONUS} ₽`);
   }
 
@@ -175,10 +172,12 @@
   let lastAccrual = parseInt(localStorage.getItem('lastAccrual') || Date.now(), 10);
   let lastDailyRoll = parseInt(localStorage.getItem('lastDailyRoll') || '0', 10) || 0;
 
-  updateBalanceUI();
-  if (lastCashbackEl) lastCashbackEl.textContent = localStorage.getItem('lastCashbackCredit') || '—';
+  // ========== HELPERS ==========
+  function safeSetItem(key, val){ try { localStorage.setItem(key, val); } catch(e){} }
+  function updateBalanceUI(){ balanceText.textContent = `${balance} ₽`; safeSetItem('balance', String(balance)); }
+  function updateVaultUI(){ const el = document.getElementById('vaultText'); if (el) el.textContent = `${vault} ₽`; safeSetItem('vault', String(vault)); }
 
-  // create grid
+  // ========== GRID ==========
   function createGrid(){
     gridEl.innerHTML = '';
     for (let r=0;r<ROWS;r++){
@@ -193,7 +192,7 @@
   }
   createGrid();
 
-  // confetti
+  // ========== CONFETTI ==========
   const Confetti = (() => {
     const c = confettiCanvas;
     const ctx = c.getContext('2d');
@@ -206,9 +205,9 @@
       }
       if (!animating) loop();
     }
-    let animating = false;
+    let animating=false;
     function loop(){
-      animating = true;
+      animating=true;
       ctx.clearRect(0,0,W,H);
       for (let i=parts.length-1;i>=0;i--){
         const p = parts[i];
@@ -217,13 +216,12 @@
         ctx.fillStyle = p.col; ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*0.6); ctx.restore();
         if (p.y > H + 50 || p.life > p.ttl) parts.splice(i,1);
       }
-      if (parts.length>0) requestAnimationFrame(loop);
-      else animating = false;
+      if (parts.length>0) requestAnimationFrame(loop); else animating=false;
     }
     return { spawn };
   })();
 
-  // lines
+  // ========== LINES ==========
   function getLines(){
     const lines = [];
     for (let r=0;r<ROWS;r++) lines.push(Array.from({length:COLS}, (_,c)=>[r,c]));
@@ -232,25 +230,25 @@
     lines.push([[0,2],[1,1],[2,0]]);
     return lines;
   }
-  const LINES = getLines();
+  const LINES = getLines(); // <<--- initialize immediately after function
 
-  // animate grid
+  // ========== GRID/SCORING/GEN ==========
   function animateGrid(arr, winCellsFlat=[]){
     const slots = Array.from(gridEl.children);
     slots.forEach((s,i)=>{
       s.className = 'slot enter';
       s.style.setProperty('--delay', `${(i%COLS)*0.05}s`);
       s.textContent = arr[i] || '❔';
-      s.addEventListener('animationend', function onEnd(){
+      const onEnd = () => {
         s.classList.remove('enter'); s.removeEventListener('animationend', onEnd);
         if (winCellsFlat.includes(i)){
           s.classList.add('win'); setTimeout(()=> s.classList.remove('win'), 900);
         }
-      });
+      };
+      s.addEventListener('animationend', onEnd);
     });
   }
 
-  // compute lines
   function computeLineScores(gridArr){
     const lineResults = [];
     for (const line of LINES){
@@ -263,8 +261,11 @@
     return lineResults;
   }
 
-  // RNG
-  function getGlobalLuck(){ return parseFloat(luckEl.textContent) || 1.0; }
+  function getGlobalLuck(){
+    const el = luckEl;
+    return el ? parseFloat(el.textContent) || 1.0 : 1.0;
+  }
+
   function generateGrid(){
     const globalLuck = getGlobalLuck();
     let baseFavor = Math.min(0.28 * (globalLuck - 1), 0.5);
@@ -280,7 +281,6 @@
     return res;
   }
 
-  // payouts
   function payoutFromLines(bet, lineResults){
     let totalMul = 0; let winningCellsFlat = [];
     for (const lr of lineResults){
@@ -296,7 +296,6 @@
     return { payout, net, totalMul, winningCellsFlat: [...new Set(winningCellsFlat)] };
   }
 
-  // visuals
   function triggerExplosion(x,y,intensity){
     if (flashEl) flashEl.style.opacity = '1';
     setTimeout(()=> { if (flashEl) flashEl.style.opacity = '0'; }, 200 + intensity*40);
@@ -305,51 +304,37 @@
     Confetti.spawn(x,y, 80 + intensity*60, 220, 20 + intensity*6);
   }
 
-  // balance helpers
-  function updateBalanceUI(){ balanceText.textContent = `${balance} ₽`; try{ localStorage.setItem('balance', String(balance)); }catch{} }
-  function updateVaultUI(){ vaultText.textContent = `${vault} ₽`; try{ localStorage.setItem('vault', String(vault)); }catch{} }
-
-  // --- ONLINE + BIG WINS (Firebase if configured) ---
+  // ========== ONLINE & BIG WINS (optional Firebase) ==========
   let firebaseDb = null;
   let sessionId = null;
 
   function loadFirebaseIfConfigured(){
     if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_KEY") {
-      // no firebase: use local simulation
       startSimulatedOnline();
       loadLocalBigWins();
       return Promise.resolve();
     }
-    // load scripts dynamically
     return new Promise((resolve) => {
-      const s1 = document.createElement('script');
-      s1.src = "https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js";
-      const s2 = document.createElement('script');
-      s2.src = "https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js";
+      const s1 = document.createElement('script'); s1.src = "https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js";
+      const s2 = document.createElement('script'); s2.src = "https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js";
       s2.onload = () => {
         try {
           firebase.initializeApp(firebaseConfig);
           firebaseDb = firebase.database();
-          // anonymous auth if available
-          if (firebase.auth) {
-            try { firebase.auth().signInAnonymously().catch(()=>{}); } catch(e){}
-          }
+          if (firebase.auth) { try { firebase.auth().signInAnonymously().catch(()=>{}); } catch(e){} }
           setupPresence();
           setupBigWinsListener();
         } catch(e){
           console.warn('Firebase init failed', e);
           startSimulatedOnline();
           loadLocalBigWins();
-        } finally {
-          resolve();
-        }
+        } finally { resolve(); }
       };
       document.head.appendChild(s1);
       document.head.appendChild(s2);
     });
   }
 
-  // Presence implementation
   function setupPresence(){
     try {
       sessionId = 's_' + Math.random().toString(36).slice(2,9);
@@ -362,153 +347,87 @@
         const count = Object.keys(val).length;
         onlineEl.textContent = count;
       });
-    } catch(e){
-      console.warn('presence failed', e);
-      startSimulatedOnline();
-    }
+    } catch(e){ console.warn('presence failed', e); startSimulatedOnline(); }
   }
 
-  // Big wins listener: read last 50 entries
   function setupBigWinsListener(){
     try {
       const bwRef = firebaseDb.ref('bigWins').limitToLast(50);
       bwRef.on('value', snap => {
         const arr = [];
         snap.forEach(s => arr.push(s.val()));
-        // sort descending by ts
         arr.sort((a,b)=> b.ts - a.ts);
         renderBigWins(arr);
       });
-    } catch(e){
-      console.warn('bigWins listener failed', e);
-      loadLocalBigWins();
-    }
+    } catch(e){ console.warn('bigWins listener failed', e); loadLocalBigWins(); }
   }
 
-  // push big win to db if available otherwise to local
+  function pushBigWinLocally(entry){
+    const arr = JSON.parse(localStorage.getItem('localBigWins') || '[]');
+    arr.unshift(entry);
+    localStorage.setItem('localBigWins', JSON.stringify(arr.slice(0,200)));
+    renderBigWins(arr);
+  }
+
   function pushBigWin(entry){
     if (firebaseDb) {
       try {
-        firebaseDb.ref('bigWins').push(entry).catch(()=>{});
+        firebaseDb.ref('bigWins').push(entry).catch(()=>{ pushBigWinLocally(entry); });
         return;
-      } catch(e){ /* fallback */ }
+      } catch(e){ pushBigWinLocally(entry); }
+    } else {
+      pushBigWinLocally(entry);
     }
-    // fallback: save locally
-    const existing = JSON.parse(localStorage.getItem('localBigWins') || '[]');
-    existing.unshift(entry);
-    localStorage.setItem('localBigWins', JSON.stringify(existing.slice(0,200)));
-    renderBigWins(existing);
   }
 
-  // render big wins UI
   function renderBigWins(list){
-    // list: array of {nick, amount, multiplier, bet, payout, ts, emoji}
     bigWinsListEl.innerHTML = '';
     if (!list || list.length === 0) {
       bigWinsListEl.innerHTML = '<div style="padding:8px;color:var(--muted)">Пока нет больших выигрышей</div>';
       return;
     }
     list.slice(0,50).forEach(item => {
-      const li = document.createElement('div');
-      li.className = 'bigwin-item';
+      const div = document.createElement('div'); div.className = 'bigwin-item';
       const left = document.createElement('div'); left.className = 'bigwin-left';
       const emoji = document.createElement('div'); emoji.className = 'bigwin-emoji'; emoji.textContent = item.emoji || '🎉';
       const info = document.createElement('div');
       const nickEl = document.createElement('div'); nickEl.className = 'bigwin-nick'; nickEl.textContent = item.nick || 'Player';
       const time = new Date(item.ts || Date.now());
-      const timeStr = time.toLocaleString();
-      const meta = document.createElement('div'); meta.style.fontSize='12px'; meta.style.color='var(--muted)'; meta.textContent = `${timeStr} • x${(item.multiplier||0).toFixed(2)}`;
+      const meta = document.createElement('div'); meta.style.fontSize='12px'; meta.style.color='var(--muted)'; meta.textContent = `${time.toLocaleString()} • x${(item.multiplier||0).toFixed(2)}`;
       info.appendChild(nickEl); info.appendChild(meta);
       left.appendChild(emoji); left.appendChild(info);
       const right = document.createElement('div'); right.className = 'bigwin-amount'; right.textContent = `+${item.amount} ₽`;
-      li.appendChild(left); li.appendChild(right);
-      bigWinsListEl.appendChild(li);
+      div.appendChild(left); div.appendChild(right);
+      bigWinsListEl.appendChild(div);
     });
   }
 
-  // local load big wins fallback
-  function loadLocalBigWins(){
-    const arr = JSON.parse(localStorage.getItem('localBigWins') || '[]');
-    renderBigWins(arr);
-  }
+  function loadLocalBigWins(){ const arr = JSON.parse(localStorage.getItem('localBigWins') || '[]'); renderBigWins(arr); }
 
-  // simulated online if no firebase
-  let simOnlineInterval = null;
   function startSimulatedOnline(){
     let count = Math.max(1, Math.floor(Math.random()*12) + 2);
     onlineEl.textContent = count;
-    simOnlineInterval = setInterval(()=>{
-      // small random walk
+    setInterval(()=>{
       count += (Math.random() < 0.5 ? -1 : 1) * (Math.random() < 0.7 ? 1 : 2);
       if (count < 1) count = 1;
       onlineEl.textContent = count;
     }, 3500);
   }
 
-  // Clear big wins (local only)
   clearBigWinsBtn.addEventListener('click', ()=>{
-    if (firebaseDb) {
-      // trying to clear remote big wins is dangerous; warn user
-      if (!confirm('Вы уверены? Это очистит только локальный список. Для очистки удалённого списка используйте консоль Firebase.')) return;
+    if (confirm('Очистить локальный список больших выигрышей?')) {
+      localStorage.removeItem('localBigWins');
+      renderBigWins([]);
     }
-    localStorage.removeItem('localBigWins');
-    renderBigWins([]);
   });
 
-  // --- CORE GAME FLOW (spin) ---
+  // ========== SPIN FLOW ==========
   function getBetValue(){
     let b = Math.floor(Number(betInput.value) || 0);
     if (b < 1) b = 1;
     if (b > balance) b = balance;
     betInput.value = b;
     return b;
-  }
-
-  function getLines(){
-    return LINES;
-  }
-
-  function animateGrid(arr, winCellsFlat=[]){
-    const slots = Array.from(gridEl.children);
-    slots.forEach((s,i)=>{
-      s.className = 'slot enter';
-      s.style.setProperty('--delay', `${(i%COLS)*0.05}s`);
-      s.textContent = arr[i] || '❔';
-      s.addEventListener('animationend', function onEnd(){
-        s.classList.remove('enter'); s.removeEventListener('animationend', onEnd);
-        if (winCellsFlat.includes(i)){
-          s.classList.add('win'); setTimeout(()=> s.classList.remove('win'), 900);
-        }
-      });
-    });
-  }
-
-  function computeLineScores(gridArr){
-    const lines = getLines();
-    const lineResults = [];
-    for (const line of lines){
-      const values = line.map(([r,c]) => gridArr[r*COLS + c]);
-      const freq = {}; values.forEach(v=> freq[v] = (freq[v]||0) + 1);
-      const bestCount = Math.max(...Object.values(freq));
-      const bestEmoji = Object.keys(freq).find(k=>freq[k]===bestCount);
-      lineResults.push({ values, bestCount, bestEmoji, cells: line });
-    }
-    return lineResults;
-  }
-
-  function payoutFromLines(bet, lineResults){
-    let totalMul = 0; let winningCellsFlat = [];
-    for (const lr of lineResults){
-      const c = lr.bestCount;
-      if (LINE_MULT[c] && LINE_MULT[c] > 0) {
-        totalMul += LINE_MULT[c];
-        lr.cells.forEach(([r,c2]) => winningCellsFlat.push(r*COLS + c2));
-      }
-    }
-    totalMul = Math.min(totalMul, 12);
-    const payout = Math.round(bet * totalMul);
-    const net = payout - bet;
-    return { payout, net, totalMul, winningCellsFlat: [...new Set(winningCellsFlat)] };
   }
 
   function triggerExplosionFromCells(cellIndices, intensity){
@@ -518,14 +437,12 @@
       triggerExplosion(rect.left + rect.width/2, rect.top + rect.height/2, intensity);
       return;
     }
-    // spawn confetti from each winning cell center
     cellIndices.forEach(idx => {
       const s = slots[idx];
       if (!s) return;
       const r = s.getBoundingClientRect();
       Confetti.spawn(r.left + r.width/2, r.top + r.height/2, 24 + intensity*8, 80, 10 + intensity*2);
     });
-    // also flash and panel shake
     const rect = gridEl.getBoundingClientRect();
     triggerExplosion(rect.left + rect.width/2, rect.top + rect.height/2, intensity);
   }
@@ -558,30 +475,18 @@
 
       const bigLines = lineResults.filter(lr => lr.bestCount >= 3);
       if (bigLines.length > 0){
-        // big win detected
         const bigCells = [];
         bigLines.forEach(lr => lr.cells.forEach(([r,c]) => bigCells.push(r*COLS + c)));
         const uniqueBigCells = [...new Set(bigCells)];
         const intensity = Math.min(4, bigLines.length + Math.floor(totalMul/3));
         triggerExplosionFromCells(uniqueBigCells, intensity);
 
-        // prepare big win entry
         const netGain = payout - bet;
-        const entry = {
-          nick: nickInput.value || 'NewPlayer',
-          emoji: lineResults[0].bestEmoji || grid[ Math.floor(Math.random()*grid.length) ],
-          amount: netGain,
-          bet,
-          payout,
-          multiplier: totalMul,
-          ts: Date.now()
-        };
-        // push if meets threshold
+        const entry = { nick: nickInput.value || 'NewPlayer', emoji: lineResults[0].bestEmoji || grid[Math.floor(Math.random()*grid.length)], amount: netGain, bet, payout, multiplier: totalMul, ts: Date.now() };
         if (netGain >= BIG_WIN_NET_MIN || totalMul >= BIG_WIN_MULT_MIN) {
           pushBigWin(entry);
-        } else {
-          // still add to local recent bigwins list for visibility if netGain positive
-          if (netGain > 0) pushBigWin(entry);
+        } else if (netGain > 0) {
+          pushBigWin(entry);
         }
       } else if (winningCellsFlat.length > 0 && payout > 0){
         const rect = gridEl.getBoundingClientRect();
@@ -589,82 +494,16 @@
       }
 
       animateGrid(grid, winningCellsFlat);
-
-      // if big win and offline local storage, render local list
       if (!firebaseDb) loadLocalBigWins();
-
       spinBtn.disabled = false;
     }, 600);
   }
 
-  // big wins local handling
-  function loadLocalBigWins(){
-    const arr = JSON.parse(localStorage.getItem('localBigWins') || '[]');
-    renderBigWins(arr);
-  }
-  function renderBigWins(list){
-    // Accepts array sorted by ts desc
-    bigWinsListEl.innerHTML = '';
-    if (!list || list.length === 0){
-      bigWinsListEl.innerHTML = '<div style="padding:8px;color:var(--muted)">Пока нет больших выигрышей</div>';
-      return;
-    }
-    list.slice(0,50).forEach(item => {
-      const div = document.createElement('div'); div.className = 'bigwin-item';
-      const left = document.createElement('div'); left.className = 'bigwin-left';
-      const emoji = document.createElement('div'); emoji.className = 'bigwin-emoji'; emoji.textContent = item.emoji || '🎉';
-      const info = document.createElement('div');
-      const nickEl = document.createElement('div'); nickEl.className = 'bigwin-nick'; nickEl.textContent = item.nick || 'Player';
-      const time = new Date(item.ts || Date.now());
-      const meta = document.createElement('div'); meta.style.fontSize='12px'; meta.style.color='var(--muted)'; meta.textContent = `${time.toLocaleString()} • x${(item.multiplier||0).toFixed(2)}`;
-      info.appendChild(nickEl); info.appendChild(meta);
-      left.appendChild(emoji); left.appendChild(info);
-      const right = document.createElement('div'); right.className = 'bigwin-amount'; right.textContent = `+${item.amount} ₽`;
-      div.appendChild(left); div.appendChild(right);
-      bigWinsListEl.appendChild(div);
-    });
-  }
-
-  function pushBigWinLocally(entry){
-    const arr = JSON.parse(localStorage.getItem('localBigWins') || '[]');
-    arr.unshift(entry);
-    localStorage.setItem('localBigWins', JSON.stringify(arr.slice(0,200)));
-    renderBigWins(arr);
-  }
-
-  // push big win to firebase or local
-  function pushBigWin(entry){
-    if (firebaseDb) {
-      try {
-        firebaseDb.ref('bigWins').push(entry).catch(()=>{ pushBigWinLocally(entry); });
-        return;
-      } catch(e){ pushBigWinLocally(entry); }
-    } else {
-      pushBigWinLocally(entry);
-    }
-  }
-
-  // clear local big wins (button)
-  clearBigWinsBtn.addEventListener('click', ()=>{
-    if (confirm('Очистить локальный список больших выигрышей?')) {
-      localStorage.removeItem('localBigWins');
-      renderBigWins([]);
-    }
-  });
-
-  // load firebase if configured (presence+bigWins)
-  loadFirebaseIfConfigured();
-
-  // fallback to local big wins on start
-  if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_KEY") {
-    loadLocalBigWins();
-  }
-
-  // simple daily dice (kept)
+  // ========== DAILY DICE (local) ==========
   const dailyRollBtn = document.getElementById('dailyRollBtn');
   const dailyInfo = document.getElementById('dailyInfo');
   function canUseDaily(){ const now=Date.now(); const day=24*60*60*1000; return (now - lastDailyRoll) >= day; }
-  function formatMs(ms){ const s=Math.floor(ms/1000); const h=Math.floor(s/3600); const m=Math.floor((s%3600)/60); const ss = s%60; return `${h}ч ${m}м ${ss}с`; }
+  function formatMs(ms){ const s=Math.floor(ms/1000); const h=Math.floor(s/3600); const m=Math.floor((s%3600)/60); const ss=s%60; return `${h}ч ${m}м ${ss}с`; }
   function updateDailyButton(){ if (!dailyInfo || !dailyRollBtn) return; const now=Date.now(); const day=24*60*60*1000; if ((now - lastDailyRoll) >= day) { dailyRollBtn.disabled=false; dailyInfo.textContent = 'Кубик доступен — минимум 100 ₽'; } else { dailyRollBtn.disabled = true; dailyInfo.textContent = 'Осталось: ' + formatMs(Math.max(0, day - (now - lastDailyRoll))); } }
   if (dailyRollBtn) {
     dailyRollBtn.addEventListener('click', ()=>{
@@ -672,12 +511,11 @@
       const roll = Math.floor(Math.random()*6) + 1;
       const reward = 100 * roll;
       balance += reward; updateBalanceUI();
-      lastDailyRoll = Date.now(); try { localStorage.setItem('lastDailyRoll', String(lastDailyRoll)); } catch {}
+      lastDailyRoll = Date.now(); try { localStorage.setItem('lastDailyRoll', String(lastDailyRoll)); }catch(e){}
       dailyInfo.textContent = `Выпало ${roll} — +${reward} ₽`;
       const rect = gridEl.getBoundingClientRect();
       Confetti.spawn(rect.left + rect.width/2, rect.top + rect.height/2, 140, 220, 18);
       if (flashEl) { flashEl.style.opacity = '1'; setTimeout(()=> flashEl.style.opacity = '0', 300); }
-      // register as big win if large enough
       if (reward >= BIG_WIN_NET_MIN) {
         const entry = { nick: nickInput.value || 'NewPlayer', emoji: '🎲', amount: reward, bet:0, payout:reward, multiplier: (reward/100), ts: Date.now() };
         pushBigWin(entry);
@@ -688,30 +526,23 @@
     updateDailyButton();
   }
 
-  // UI bindings
+  // ========== BINDINGS & START ==========
   spinBtn.addEventListener('click', runSpin);
   startBtn.addEventListener('click', ()=> alert('Игра готова. Нажмите "Запустить поток"'));
   resetBtn.addEventListener('click', ()=> { if (confirm('Сбросить локальные данные?')) { localStorage.clear(); location.reload(); }});
   minBetBtn.addEventListener('click', ()=> betInput.value = 1);
   halfBetBtn.addEventListener('click', ()=> betInput.value = Math.max(1, Math.floor(balance/2)));
   maxBetBtn.addEventListener('click', ()=> betInput.value = balance);
-  nickInput.addEventListener('input', ()=> { nick = nickInput.value || 'NewPlayer'; try{ localStorage.setItem('nick', nick); }catch{} });
-  dynSelect.addEventListener('change', ()=> { dyn = dynSelect.value; try{ localStorage.setItem('dyn', dyn); }catch{} });
+  nickInput.addEventListener('input', ()=> { nick = nickInput.value || 'NewPlayer'; try{ localStorage.setItem('nick', nick); }catch(e){} });
+  dynSelect.addEventListener('change', ()=> { dyn = dynSelect.value; try{ localStorage.setItem('dyn', dyn); }catch(e){} });
 
-  // seed and initial UI
   (function seed(){ const base = Array.from({length:SLOT_COUNT}, (_,i) => EMOJI_POOL[(i*2)%EMOJI_POOL.length]); animateGrid(base); scoreText.textContent = 'Нажмите «Запустить поток»'; })();
-  updateBalanceUI(); updateVaultUI();
-  // if no firebase, ensure online counter simulated
-  if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_KEY") {
-    // simple simulation: small random walk
-    let simCount = Math.max(1, Math.floor(Math.random()*12)+3);
-    onlineEl.textContent = simCount;
-    setInterval(()=> {
-      simCount += (Math.random() < 0.5 ? -1 : 1) * (Math.random() < 0.75 ? 1 : 2);
-      if (simCount < 1) simCount = 1;
-      onlineEl.textContent = simCount;
-    }, 3500);
-  }
+
+  loadFirebaseIfConfigured().then(()=> {
+    if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_KEY") {
+      loadLocalBigWins();
+    }
+  });
 
   </script>
 </body>
