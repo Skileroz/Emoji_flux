@@ -3,61 +3,73 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Emoji Flux — Online & Big Wins (Firebase)</title>
+  <title>Emoji Flux — Бонусы & Эффекты</title>
   <style>
     :root{
-      --bg1:#071029; --bg2:#0f1724; --card:rgba(255,255,255,0.02);
-      --accent:#ffd166; --muted:#98a8c7;
-      --slot-size:88px; --slot-gap:12px;
-      --font-sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-      --flash-color: rgba(255,240,200,0.92);
+      --bg1:#060916; --bg2:#07162a;
+      --card: rgba(255,255,255,0.02);
+      --accent: #ffd166;
+      --muted: #bcd3ea;
+      --slot-size:84px; --slot-gap:12px;
+      --ui-font: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
     }
-    body{margin:0;font-family:var(--font-sans);background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--muted);min-height:100vh}
+    html,body{height:100%}
+    body{
+      margin:0; background:
+        radial-gradient(800px 400px at 10% 10%, rgba(15,30,60,0.14), transparent),
+        linear-gradient(180deg,var(--bg1),var(--bg2));
+      color:var(--muted); font-family:var(--ui-font); -webkit-font-smoothing:antialiased;
+      display:flex; flex-direction:column;
+    }
+
     header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
     .brand{font-weight:800;color:var(--accent);letter-spacing:.6px}
     .controls{display:flex;gap:10px;align-items:center}
-    select,input[type="text"],input[type="number"]{padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
-    button{padding:8px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),#ffb86b);color:#08101a;font-weight:700;cursor:pointer}
-    main{display:flex;gap:18px;padding:18px;align-items:flex-start}
-    .field{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
-    .panel{width:100%;max-width:980px;padding:18px;border-radius:12px;background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.01));box-shadow:0 12px 36px rgba(2,6,23,0.45);display:flex;flex-direction:column;align-items:center;gap:12px}
-    .grid{display:grid;grid-template-columns:repeat(3, var(--slot-size));grid-gap:var(--slot-gap);padding:10px}
-    .slot{width:var(--slot-size);height:var(--slot-size);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:42px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 8px 20px rgba(0,0,0,0.35);transition:transform .18s, box-shadow .18s, filter .18s}
-    .slot.enter{opacity:0; transform:translateY(-30px) scale(.95); animation:slot-in .46s cubic-bezier(.2,.9,.3,1) var(--delay) both}
-    @keyframes slot-in{0%{opacity:0;transform:translateY(-30px) scale(.95)}60%{transform:translateY(6px) scale(1.06)}100%{opacity:1;transform:translateY(0) scale(1)}}
-    .slot.win{box-shadow:0 18px 56px rgba(255,200,90,0.14); transform:scale(1.06); filter:brightness(1.12)}
-    .top-controls{display:flex;gap:12px;align-items:center;width:100%;justify-content:space-between}
-    .score{font-weight:700;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.02)}
-    .score.pop{animation:pop .6s cubic-bezier(.2,.9,.3,1)}
-    @keyframes pop{0%{transform:scale(.85);opacity:0}50%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
-    .aside-section{background:var(--card);padding:12px;border-radius:10px;margin-bottom:12px}
-    .bigwins-list{max-height:260px;overflow:auto;padding:8px 6px}
-    .bigwin-item{padding:8px;border-bottom:1px solid rgba(255,255,255,0.02);display:flex;justify-content:space-between;gap:8px;align-items:center}
-    .bigwin-left{display:flex;gap:8px;align-items:center}
-    .bigwin-emoji{font-size:18px}
-    .bigwin-nick{font-weight:700}
-    .bigwin-amount{color:var(--accent)}
-    .online-counter{font-weight:700;color:var(--accent-2, #6ee7b7)}
-    .flash{position:fixed;inset:0;pointer-events:none;z-index:90;background:var(--flash-color);opacity:0;transition:opacity .18s}
-    canvas#confetti{position:fixed;left:0;top:0;pointer-events:none;z-index:80}
-    @media (max-width:980px){main{flex-direction:column} aside{width:100%}}
-  </style>
 
-  <!-- Firebase compat scripts (Firestore + Auth) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    main{display:flex;gap:18px;padding:12px;flex:1;align-items:flex-start}
+    .field{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
+    .panel{width:100%;max-width:980px;padding:16px;border-radius:12px;background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.008));box-shadow:0 12px 40px rgba(0,0,0,0.6);display:flex;flex-direction:column;align-items:center;gap:14px}
+
+    .top-controls{display:flex;justify-content:space-between;align-items:center;width:100%}
+    .bet-group{display:flex;gap:8px;align-items:center}
+
+    .grid-wrap{position:relative}
+    .grid{display:grid;grid-template-columns:repeat(3,var(--slot-size));grid-gap:var(--slot-gap);padding:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:10px}
+    .slot{width:var(--slot-size);height:var(--slot-size);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:40px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 10px 30px rgba(0,0,0,0.6);transition:transform .22s,filter .18s}
+    .slot.enter{opacity:0;transform:translateY(-28px) scale(.96);animation:slot-in .46s both}
+    @keyframes slot-in{0%{opacity:0;transform:translateY(-28px) scale(.96)}60%{transform:translateY(6px) scale(1.06)}100%{opacity:1;transform:translateY(0) scale(1)}}
+    .slot.win{transform:scale(1.1);filter:brightness(1.15);box-shadow:0 30px 120px rgba(255,200,80,0.16)}
+
+    .actions{display:flex;gap:12px}
+    button{padding:8px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),#ffb86b);cursor:pointer;font-weight:700;color:#08101a}
+
+    aside{width:360px;display:flex;flex-direction:column;gap:12px}
+    .aside-section{background:var(--card);padding:12px;border-radius:10px}
+    .small{font-size:0.92rem;color:var(--muted)}
+    .balance{font-weight:800;color:var(--accent)}
+
+    /* visual fx layers */
+    canvas#fxCanvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:90}
+    .win-badge{position:fixed;left:50%;top:8%;transform:translateX(-50%);z-index:100;font-family:Impact, system-ui, sans-serif;font-size:56px;color:#fff;padding:14px 28px;border-radius:12px;opacity:0;pointer-events:none;background:linear-gradient(90deg,#ffd166,#ffb86b);text-shadow:0 6px 28px rgba(0,0,0,0.5)}
+    .win-badge.show{animation:winpop .9s forwards}
+    @keyframes winpop{0%{transform:translateX(-50%) translateY(-12px) scale(.8);opacity:0}40%{transform:translateX(-50%) translateY(6px) scale(1.14);opacity:1}100%{transform:translateX(-50%) translateY(0) scale(1)}}
+
+    /* more pronounced glow on body during huge wins */
+    .flash{position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 30%, rgba(255,240,200,0.95), rgba(255,240,200,0.4) 10%, transparent 30%);opacity:0;transition:opacity .12s linear;z-index:80}
+
+    @media (max-width:960px){aside{width:100%}main{flex-direction:column} .win-badge{font-size:44px}}
+  </style>
 </head>
 <body>
   <div class="flash" id="flash"></div>
-  <canvas id="confetti"></canvas>
+  <div class="win-badge" id="winBadge">BIG WIN</div>
+  <canvas id="fxCanvas"></canvas>
 
   <header>
-    <div class="brand">Emoji Flux — Wild Grid</div>
+    <div class="brand">Emoji Flux — бонусы & эффекты</div>
     <div class="controls">
-      <input id="nick" type="text" placeholder="NewPlayer" maxlength="20" />
-      <select id="dynSelect"><option value="low">Динамичность: Низкая</option><option value="normal">Динамичность: Обычная</option><option value="high">Динамичность: Высокая</option></select>
-      <button id="startBtn">Старт</button>
+      <input id="nick" type="text" placeholder="Никнейм" maxlength="20" style="padding:8px;border-radius:8px" />
+      <button id="saveNickBtn">Сохранить</button>
     </div>
   </header>
 
@@ -65,450 +77,765 @@
     <section class="field">
       <div class="panel">
         <div class="top-controls">
-          <div style="display:flex;gap:10px;align-items:center">
-            <label>Ставка</label>
-            <input id="betInput" type="number" min="1" step="1" value="20" style="width:120px" />
+          <div class="bet-group">
+            <label class="small">Ставка</label>
+            <input id="betInput" type="number" value="20" min="1" style="width:110px;padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04)" />
             <button id="minBet">Мин</button>
             <button id="halfBet">1/2</button>
             <button id="maxBet">Макс</button>
           </div>
-          <div class="score" id="scoreText">Нажмите «Старт»</div>
+          <div class="score" id="scoreText">Нажмите «Запустить поток»</div>
         </div>
 
-        <div style="position:relative;padding:8px">
-          <div class="grid" id="grid"></div>
+        <div class="grid-wrap" aria-live="polite">
+          <div class="grid" id="grid" role="grid"></div>
         </div>
 
-        <div style="display:flex;gap:12px">
+        <div class="actions">
           <button id="spinBtn">Запустить поток</button>
-          <button id="resetBtn" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)">Сброс</button>
+          <button id="freeSpinBtn">Использовать Free Spin</button>
+          <button id="boostBtn">Использовать x1.5 Booster</button>
         </div>
       </div>
     </section>
 
-    <aside style="width:360px">
+    <aside>
       <div class="aside-section">
-        Онлайн: <span id="online" class="online-counter">—</span>
-        <div style="margin-top:8px">Глоб. удача: <span id="luck">1.00</span></div>
+        <div>Баланс: <span class="balance" id="balanceText">—</span></div>
+        <div class="small">Кэшбек: <span id="vaultText">0</span> (капитал)</div>
       </div>
 
       <div class="aside-section">
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-weight:700">Большие выигрыши</div>
-          <button id="clearBigWins" style="background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px;border-radius:8px;color:var(--muted)">Очистить</button>
+          <div style="font-weight:700">Бонусы</div>
+          <button id="clearBonuses" style="background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px;border-radius:8px;color:var(--muted)">Сброс</button>
         </div>
-        <div class="bigwins-list" id="bigWinsList"></div>
+        <div style="margin-top:8px" class="small">
+          <div>Ежедневный кубик: <button id="dailyBtn">Бросить кубик</button></div>
+          <div style="margin-top:8px">Стрик дней: <span id="streak">0</span></div>
+          <div style="margin-top:8px">Free Spins: <strong id="freeSpins">0</strong> <button id="grantFreeBtn">Получить +1</button></div>
+          <div style="margin-top:8px">Booster x1.5 (следующие N спинов): <strong id="boostCount">0</strong> <button id="buyBoost">Купить за 5000 ₽</button></div>
+          <div style="margin-top:8px">Лояльность (повышенный кэшбек): <span id="loyalty">0%</span></div>
+        </div>
       </div>
 
       <div class="aside-section">
-        <div>Баланс: <span id="balanceText">—</span></div>
-        <div style="margin-top:8px">Последний кэшбек: <span id="lastCashback">—</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:700">Большие выигрыши</div><button id="clearBigWins" style="background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px;border-radius:8px;color:var(--muted)">Очистить</button></div>
+        <div class="bigwins-list" id="bigWinsList" style="margin-top:8px;max-height:220px;overflow:auto"></div>
       </div>
     </aside>
   </main>
 
   <script>
-  /************************************************************************
-   Интеграция Firebase (Firestore) для реального онлайна и bigWins.
-   Вы прислали firebaseConfig — использую его ниже.
-  ************************************************************************/
+  // Emoji Flux — Bonuses & Improved Effects
+  // All client-side prototype. Data persisted in localStorage.
 
-  // ----------------- Ваш Firebase config (вставлено) -----------------
-  const firebaseConfig = {
-    apiKey: "AIzaSyC2hIlVkF2H-ztsywA1ygidWjUDPvedcds",
-    authDomain: "emoji-flux.firebaseapp.com",
-    projectId: "emoji-flux",
-    storageBucket: "emoji-flux.firebasestorage.app",
-    messagingSenderId: "187870093270",
-    appId: "1:187870093270:web:da027f5a00213264ed4e77",
-    measurementId: "G-3N9T2T362P"
-  };
-  // --------------------------------------------------------------------
-
-  // Game config
+  // ===== Config =====
   const EMOJI_POOL = ['🔥','⚡️','💧','🍀','🌟','🎯','🍎','💎','🌊','☄️','✨','🎵','🎲'];
-  const ROWS = 3, COLS = 3, SLOT_COUNT = ROWS * COLS;
-  const STARTER_BONUS = 100;
-  const START_BALANCE_DEFAULT = 100;
-  const CASHBACK_RATE_PER_DAY = 0.10;
-  const CASHBACK_INTERVAL_MS = 60 * 1000;
-  const DYN_MULT = { low:0.6, normal:1.0, high:1.8 };
-  const LINE_MULT = { 3:3.0, 2:0.6, 1:0.0 };
+  const ROWS = 3;
+  const COLS = 3;
+  const SLOT_COUNT = ROWS * COLS;
 
-  const BIG_WIN_NET_MIN = 100;
-  const BIG_WIN_MULT_MIN = 4.0;
+  // thresholds for effects
+  const BIG_WIN_NET_MIN = 200;
+  const HUGE_WIN_NET_MIN = 800;
 
-  // DOM
+  // ===== State (persisted) =====
+  let nick = localStorage.getItem('nick') || 'Player';
+  let balance = Number(localStorage.getItem('balance')) || 1000;
+  let vault = Number(localStorage.getItem('vault')) || 0;
+  let freeSpins = Number(localStorage.getItem('freeSpins')) || 0;
+  let boostCount = Number(localStorage.getItem('boostCount')) || 0; // number of boosted spins (1.5x)
+  let streak = Number(localStorage.getItem('streak')) || 0; // daily streak days
+  let lastDaily = Number(localStorage.getItem('lastDaily') || 0);
+  let bigWins = JSON.parse(localStorage.getItem('localBigWins') || '[]');
+
+  // UI refs
   const gridEl = document.getElementById('grid');
-  const nickInput = document.getElementById('nick');
-  const dynSelect = document.getElementById('dynSelect');
-  const startBtn = document.getElementById('startBtn');
-  const spinBtn = document.getElementById('spinBtn');
-  const resetBtn = document.getElementById('resetBtn');
-  const betInput = document.getElementById('betInput');
-  const minBetBtn = document.getElementById('minBet');
-  const halfBetBtn = document.getElementById('halfBet');
-  const maxBetBtn = document.getElementById('maxBet');
-  const scoreText = document.getElementById('scoreText');
   const balanceText = document.getElementById('balanceText');
-  const lastCashbackEl = document.getElementById('lastCashback');
-  const onlineEl = document.getElementById('online');
+  const vaultText = document.getElementById('vaultText');
+  const freeSpinsEl = document.getElementById('freeSpins');
+  const boostCountEl = document.getElementById('boostCount');
+  const streakEl = document.getElementById('streak');
+  const loyaltyEl = document.getElementById('loyalty');
+  const winBadge = document.getElementById('winBadge');
+  const fxCanvas = document.getElementById('fxCanvas');
   const bigWinsListEl = document.getElementById('bigWinsList');
-  const clearBigWinsBtn = document.getElementById('clearBigWins');
-  const luckEl = document.getElementById('luck');
   const flashEl = document.getElementById('flash');
-  const confettiCanvas = document.getElementById('confetti');
 
-  // state
-  let nick = localStorage.getItem('nick') || 'NewPlayer';
+  // buttons
+  const spinBtn = document.getElementById('spinBtn');
+  const freeSpinBtn = document.getElementById('freeSpinBtn');
+  const boostBtn = document.getElementById('boostBtn');
+  const dailyBtn = document.getElementById('dailyBtn');
+  const grantFreeBtn = document.getElementById('grantFreeBtn');
+  const buyBoostBtn = document.getElementById('buyBoost');
+  const buyBoost = document.getElementById('buyBoost');
+  const clearBigWinsBtn = document.getElementById('clearBigWins');
+  const clearBonusesBtn = document.getElementById('clearBonuses');
+  const saveNickBtn = document.getElementById('saveNickBtn');
+
+  // seed nick val
+  const nickInput = document.getElementById('nick');
   nickInput.value = nick;
-  let dyn = localStorage.getItem('dyn') || 'normal';
-  dynSelect.value = dyn;
 
-  let balance;
-  const storedBalance = localStorage.getItem('balance');
-  if (storedBalance !== null) {
-    const p = parseInt(storedBalance, 10);
-    balance = Number.isNaN(p) ? START_BALANCE_DEFAULT : p;
-  } else {
-    balance = START_BALANCE_DEFAULT;
+  // sound (WebAudio)
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const audioCtx = AudioCtx ? new AudioCtx() : null;
+
+  function playTone(freq=440, duration=0.12, type='sine', gain=0.08){
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.value = gain;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+    setTimeout(()=>{ try{ o.stop(); }catch(e){} }, duration*1000+10);
   }
 
-  if (!localStorage.getItem('starterClaimed')) {
-    balance = (Number(balance) || 0) + STARTER_BONUS;
-    try { localStorage.setItem('balance', String(balance)); } catch(e){}
-    try { localStorage.setItem('starterClaimed','1'); } catch(e){}
-    alert(`Бонус: +${STARTER_BONUS} ₽`);
+  function playWinSound(level='small'){
+    if (!audioCtx) return;
+    if (level === 'small') { playTone(880,0.08,'sine',0.06); }
+    else if (level === 'big') { playTone(560,0.16,'triangle',0.12); playTone(1320,0.12,'sine',0.08); }
+    else if (level === 'huge') { playTone(420,0.26,'sawtooth',0.16); playTone(1100,0.2,'sine',0.12); }
   }
 
-  let vault = parseInt(localStorage.getItem('vault') || '0', 10) || 0;
-  let lastAccrual = parseInt(localStorage.getItem('lastAccrual') || Date.now(), 10);
-  let lastDailyRoll = parseInt(localStorage.getItem('lastDailyRoll') || '0', 10) || 0;
+  // FX canvas (particles, rays)
+  const c = fxCanvas;
+  const ctx = c.getContext('2d');
+  let W = 0, H = 0;
+  function resize(){ W = c.width = innerWidth; H = c.height = innerHeight; }
+  addEventListener('resize', resize); resize();
 
-  function safeSetItem(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
-  function updateBalanceUI(){ balanceText.textContent = `${balance} ₽`; safeSetItem('balance', String(balance)); }
-  function updateVaultUI(){ const el = document.getElementById('vaultText'); if (el) el.textContent = `${vault} ₽`; safeSetItem('vault', String(vault)); }
+  // particles store
+  const particles = [];
 
-  // grid
+  function spawnParticles(x,y,count=40,spread=120,power=12,colors){
+    for (let i=0;i<count;i++){
+      particles.push({
+        x: x + (Math.random()-0.5)*spread,
+        y: y + (Math.random()-0.5)*spread,
+        vx: (Math.random()-0.5)*power,
+        vy: -Math.random()*power - 2,
+        r: Math.random()*6+4,
+        life: 0,
+        ttl: 60 + Math.floor(Math.random()*80),
+        col: (colors && colors[Math.floor(Math.random()*colors.length)]) || ['#ffd166','#6ee7b7','#60a5fa','#f472b6'][Math.floor(Math.random()*4)]
+      });
+    }
+    if (!fxAnimating) fxLoop();
+  }
+
+  let fxAnimating = false;
+  function fxLoop(){
+    fxAnimating = true;
+    ctx.clearRect(0,0,W,H);
+    for (let i=particles.length-1;i>=0;i--){
+      const p = particles[i];
+      p.life++; p.vy += 0.22; p.x += p.vx; p.y += p.vy;
+      ctx.globalAlpha = Math.max(0, 1 - p.life / p.ttl);
+      ctx.fillStyle = p.col;
+      ctx.beginPath();
+      ctx.ellipse(p.x, p.y, p.r, p.r*0.6, p.life*0.05, 0, Math.PI*2);
+      ctx.fill();
+      if (p.life > p.ttl || p.y > H + 50) particles.splice(i,1);
+    }
+    ctx.globalAlpha = 1;
+    if (particles.length > 0) requestAnimationFrame(fxLoop);
+    else fxAnimating = false;
+  }
+
+  // ray flash
+  function flash(duration=260){
+    flashEl.style.opacity = '1';
+    setTimeout(()=> flashEl.style.opacity = '0', duration);
+  }
+
+  // big win badge
+  function showWinBadge(amount){
+    winBadge.textContent = 'BIG WIN';
+    const sub = document.createElement('div');
+    sub.style.fontSize = '16px';
+    sub.style.fontWeight = '700';
+    sub.style.marginTop = '6px';
+    sub.textContent = `+${amount} ₽`;
+    winBadge.innerHTML = 'BIG WIN';
+    winBadge.appendChild(sub);
+    winBadge.classList.add('show');
+    setTimeout(()=> winBadge.classList.remove('show'), 2200);
+  }
+
+  // seed grid
   function createGrid(){
     gridEl.innerHTML = '';
-    for (let r=0;r<ROWS;r++){
-      for (let c=0;c<COLS;c++){
-        const slot = document.createElement('div');
-        slot.className = 'slot';
-        slot.dataset.r = r;
-        slot.dataset.c = c;
-        gridEl.appendChild(slot);
-      }
+    for (let i=0;i<SLOT_COUNT;i++){
+      const d = document.createElement('div');
+      d.className = 'slot';
+      gridEl.appendChild(d);
     }
   }
   createGrid();
 
-  // confetti
-  const Confetti = (() => {
-    const c = confettiCanvas;
-    const ctx = c.getContext('2d');
-    let W=0,H=0, parts=[];
-    function resize(){ W=c.width=innerWidth; H=c.height=innerHeight; }
-    addEventListener('resize', resize); resize();
-    function spawn(x,y,n,spread=120,power=14){
-      for (let i=0;i<n;i++){
-        parts.push({ x: x + (Math.random()-0.5)*spread, y: y + (Math.random()-0.5)*spread, vx:(Math.random()-0.5)*power, vy: -Math.random()*power - 2, r: Math.random()*10+4, col: ['#ffd166','#6ee7b7','#60a5fa','#f472b6','#fff59d','#b4f8c8'][Math.floor(Math.random()*6)], life:0, ttl:80 + Math.floor(Math.random()*120) });
-      }
-      if (!animating) loop();
-    }
-    let animating=false;
-    function loop(){
-      animating=true;
-      ctx.clearRect(0,0,W,H);
-      for (let i=parts.length-1;i>=0;i--){
-        const p = parts[i];
-        p.life++; p.vy += 0.35; p.x += p.vx; p.y += p.vy;
-        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.life*0.07);
-        ctx.fillStyle = p.col; ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*0.6); ctx.restore();
-        if (p.y > H + 50 || p.life > p.ttl) parts.splice(i,1);
-      }
-      if (parts.length>0) requestAnimationFrame(loop); else animating=false;
-    }
-    return { spawn };
-  })();
-
-  // lines
-  function getLines(){
-    const lines = [];
-    for (let r=0;r<ROWS;r++) lines.push(Array.from({length:COLS}, (_,c)=>[r,c]));
-    for (let c=0;c<COLS;c++) lines.push(Array.from({length:ROWS}, (_,r)=>[r,c]));
-    lines.push([[0,0],[1,1],[2,2]]);
-    lines.push([[0,2],[1,1],[2,0]]);
-    return lines;
-  }
-  const LINES = getLines();
-
-  function animateGrid(arr, winCellsFlat=[]){
+  function animateGrid(arr, winIndices=[]){
     const slots = Array.from(gridEl.children);
     slots.forEach((s,i)=>{
       s.className = 'slot enter';
-      s.style.setProperty('--delay', `${(i%COLS)*0.05}s`);
+      s.style.setProperty('--delay', `${(i%COLS)*0.04}s`);
       s.textContent = arr[i] || '❔';
       const onEnd = () => {
         s.classList.remove('enter'); s.removeEventListener('animationend', onEnd);
-        if (winCellsFlat.includes(i)){
-          s.classList.add('win'); setTimeout(()=> s.classList.remove('win'), 900);
-        }
+        if (winIndices.includes(i)){ s.classList.add('win'); setTimeout(()=> s.classList.remove('win'), 1200); }
       };
       s.addEventListener('animationend', onEnd);
     });
   }
 
+  function computeScoreGrid(arr){
+    // freq overall and best runs per line (rows/cols/diags)
+    const freq = {};
+    arr.forEach(e => freq[e] = (freq[e]||0)+1);
+    const best = Math.max(...Object.values(freq));
+    // compute runs horizontally
+    let run = 1, longest = 1;
+    for (let i=1;i<arr.length;i++){
+      if (arr[i] === arr[i-1]) { run++; longest = Math.max(longest, run); } else run = 1;
+    }
+    return { best, longest, freq };
+  }
+
   function computeLineScores(gridArr){
-    const lineResults = [];
-    for (const line of LINES){
-      const values = line.map(([r,c]) => gridArr[r*COLS + c]);
+    // lines: 3 rows, 3 cols, 2 diags
+    const lines = [];
+    // rows
+    for (let r=0;r<ROWS;r++){
+      lines.push(Array.from({length:COLS}, (_,c)=> gridArr[r*COLS + c]));
+    }
+    // cols
+    for (let c=0;c<COLS;c++){
+      const col = [];
+      for (let r=0;r<ROWS;r++) col.push(gridArr[r*COLS + c]);
+      lines.push(col);
+    }
+    // diags
+    lines.push([gridArr[0*COLS + 0], gridArr[1*COLS + 1], gridArr[2*COLS + 2]]);
+    lines.push([gridArr[0*COLS + 2], gridArr[1*COLS + 1], gridArr[2*COLS + 0]]);
+
+    // compute best counts and emoji per line
+    return lines.map(values=>{
       const freq = {}; values.forEach(v=> freq[v] = (freq[v]||0)+1);
       const bestCount = Math.max(...Object.values(freq));
       const bestEmoji = Object.keys(freq).find(k=>freq[k]===bestCount);
-      lineResults.push({ values, bestCount, bestEmoji, cells: line });
-    }
-    return lineResults;
-  }
-
-  function getGlobalLuck(){ return luckEl ? parseFloat(luckEl.textContent) || 1.0 : 1.0; }
-
-  function generateGrid(){
-    const globalLuck = getGlobalLuck();
-    let baseFavor = Math.min(0.28 * (globalLuck - 1), 0.5);
-    const dmult = DYN_MULT[dyn] || 1.0;
-    const favor = Math.min(baseFavor * dmult, 0.75);
-    const res = [];
-    for (let i=0;i<SLOT_COUNT;i++){
-      if (i>0 && Math.random() < favor){
-        if (Math.random() < 0.6) res.push(res[i-1]);
-        else res.push(res[Math.floor(Math.random()*i)]);
-      } else res.push(EMOJI_POOL[Math.floor(Math.random()*EMOJI_POOL.length)]);
-    }
-    return res;
-  }
-
-  function payoutFromLines(bet, lineResults){
-    let totalMul = 0; let winningCellsFlat = [];
-    for (const lr of lineResults){
-      const c = lr.bestCount;
-      if (LINE_MULT[c] && LINE_MULT[c] > 0){
-        totalMul += LINE_MULT[c];
-        lr.cells.forEach(([r,c2]) => winningCellsFlat.push(r*COLS + c2));
-      }
-    }
-    totalMul = Math.min(totalMul, 12);
-    const payout = Math.round(bet * totalMul);
-    const net = payout - bet;
-    return { payout, net, totalMul, winningCellsFlat: [...new Set(winningCellsFlat)] };
-  }
-
-  // FIRESTORE PRESENCE & BIGWINS
-  let db = null;
-  let presenceDoc = null;
-  let presenceTimer = null;
-  let sessionId = null;
-
-  function initFirebaseFeatures(){
-    try {
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
-      // anonymous auth helps to satisfy rules if used
-      try { firebase.auth().signInAnonymously().catch(()=>{}); } catch(e){}
-
-      sessionId = 's_' + Math.random().toString(36).slice(2,9);
-      presenceDoc = db.collection('presence').doc(sessionId);
-      // create presence doc immediately
-      presenceDoc.set({ nick: nickInput.value || 'NewPlayer', ts: Date.now() }).catch(()=>{});
-      // heartbeat every 12s
-      presenceTimer = setInterval(()=> {
-        presenceDoc.set({ nick: nickInput.value || 'NewPlayer', ts: Date.now() }, { merge: true }).catch(()=>{});
-      }, 12000);
-      // remove on unload
-      window.addEventListener('beforeunload', ()=> {
-        try { presenceDoc.delete().catch(()=>{}); } catch(e){}
-      });
-
-      // subscribe to presence collection and count recent docs (last 45s)
-      db.collection('presence').onSnapshot(snap=>{
-        const now = Date.now();
-        let count = 0;
-        snap.forEach(doc => {
-          const d = doc.data();
-          const ts = d && d.ts ? Number(d.ts) : 0;
-          if ((now - ts) < 45000) count++;
-        });
-        onlineEl.textContent = count;
-      });
-
-      // subscribe to bigWins collection
-      db.collection('bigWins').orderBy('ts','desc').limit(50).onSnapshot(snap=>{
-        const list = [];
-        snap.forEach(doc => list.push(doc.data()));
-        renderBigWins(list);
-      });
-
-      return true;
-    } catch(e){
-      console.warn('Firebase features failed', e);
-      return false;
-    }
-  }
-
-  function pushBigWinToFirestore(entry){
-    if (!db) { pushBigWinLocally(entry); return; }
-    try {
-      db.collection('bigWins').add(entry).catch(()=> pushBigWinLocally(entry));
-    } catch(e){ pushBigWinLocally(entry); }
-  }
-
-  function pushBigWinLocally(entry){
-    const arr = JSON.parse(localStorage.getItem('localBigWins') || '[]');
-    arr.unshift(entry);
-    localStorage.setItem('localBigWins', JSON.stringify(arr.slice(0,200)));
-    renderBigWins(arr);
-  }
-
-  function renderBigWins(list){
-    bigWinsListEl.innerHTML = '';
-    if (!list || list.length === 0) {
-      bigWinsListEl.innerHTML = '<div style="padding:8px;color:var(--muted)">Пока нет больших выигрышей</div>';
-      return;
-    }
-    list.slice(0,50).forEach(item => {
-      const div = document.createElement('div'); div.className = 'bigwin-item';
-      const left = document.createElement('div'); left.className = 'bigwin-left';
-      const emoji = document.createElement('div'); emoji.className = 'bigwin-emoji'; emoji.textContent = item.emoji || '🎉';
-      const info = document.createElement('div');
-      const nickEl = document.createElement('div'); nickEl.className = 'bigwin-nick'; nickEl.textContent = item.nick || 'Player';
-      const time = new Date(item.ts || Date.now());
-      const meta = document.createElement('div'); meta.style.fontSize='12px'; meta.style.color='var(--muted)'; meta.textContent = `${time.toLocaleString()} • x${(item.multiplier||0).toFixed(2)}`;
-      info.appendChild(nickEl); info.appendChild(meta);
-      left.appendChild(emoji); left.appendChild(info);
-      const right = document.createElement('div'); right.className = 'bigwin-amount'; right.textContent = `+${item.amount} ₽`;
-      div.appendChild(left); div.appendChild(right);
-      bigWinsListEl.appendChild(div);
+      return { values, bestCount, bestEmoji };
     });
   }
 
-  function loadLocalBigWins(){ const arr = JSON.parse(localStorage.getItem('localBigWins') || '[]'); renderBigWins(arr); }
-
-  // Initialize firebase features; if fail -> simulated online & local bigwins
-  const fbOk = initFirebaseFeatures();
-  if (!fbOk) {
-    // simulate presence
-    let sim = Math.max(3, Math.floor(Math.random()*10)+2);
-    onlineEl.textContent = sim;
-    setInterval(()=> {
-      sim += (Math.random() < 0.5 ? -1 : 1) * (Math.random() < 0.7 ? 1 : 2);
-      if (sim < 1) sim = 1;
-      onlineEl.textContent = sim;
-    }, 3500);
-    loadLocalBigWins();
+  function payoutForBet(bet, lineResults){
+    // compute multiplier: sum per-line multipliers
+    let mul = 0;
+    const winningCells = [];
+    lineResults.forEach((lr, li) => {
+      if (lr.bestCount >= 3) {
+        mul += (lr.bestCount === 3 ? 3 : (lr.bestCount === 4 ? 6 : 12));
+        // find indices of winning cells to highlight - convert line index to cell indices
+        // For simplicity we'll highlight based on line type (rows 0-2, cols 3-5, diags 6-7)
+        // compute cells:
+        if (li < 3) { // row
+          const r = li;
+          for (let c=0;c<COLS;c++) winningCells.push(r*COLS + c);
+        } else if (li < 6) { // col
+          const c = li - 3;
+          for (let r=0;r<ROWS;r++) winningCells.push(r*COLS + c);
+        } else if (li === 6) { winningCells.push(0,4,8); }
+        else if (li === 7) { winningCells.push(2,4,6); }
+      } else if (lr.bestCount === 2) {
+        mul += 0.6;
+      }
+    });
+    mul = Math.max(mul, 0);
+    const payout = Math.round(bet * mul);
+    return { payout, multiplier: mul, winningCells: [...new Set(winningCells)] };
   }
 
-  // Clear big wins
-  clearBigWinsBtn.addEventListener('click', ()=>{
-    if (confirm('Очистить локальный список больших выигрышей?')) {
-      localStorage.removeItem('localBigWins');
-      renderBigWins([]);
-    }
-  });
+  // big wins storage
+  function addBigWin(entry){
+    bigWins.unshift(entry);
+    if (bigWins.length > 200) bigWins = bigWins.slice(0,200);
+    safeSetItem('localBigWins', JSON.stringify(bigWins));
+    renderBigWins();
+  }
 
-  // SPIN flow
-  function getBetValue(){ let b = Math.floor(Number(betInput.value) || 0); if (b < 1) b = 1; if (b > balance) b = balance; betInput.value = b; return b; }
-
-  function triggerExplosionFromCells(cellIndices, intensity){
-    const slots = Array.from(gridEl.children);
-    if (!cellIndices || cellIndices.length === 0){
-      const rect = gridEl.getBoundingClientRect();
-      triggerExplosion(rect.left + rect.width/2, rect.top + rect.height/2, intensity);
+  function renderBigWins(){
+    bigWinsListEl.innerHTML = '';
+    if (!bigWins || bigWins.length === 0) {
+      bigWinsListEl.innerHTML = '<div style="color:var(--muted);padding:8px">Пока нет больших выигрышей</div>';
       return;
     }
-    cellIndices.forEach(idx => {
+    bigWins.slice(0,50).forEach(it => {
+      const el = document.createElement('div'); el.className = 'bigwin-item';
+      const left = document.createElement('div'); left.className = 'bigwin-left';
+      const em = document.createElement('div'); em.className = 'bigwin-emoji'; em.textContent = it.emoji || '🎉';
+      const info = document.createElement('div');
+      const n = document.createElement('div'); n.className = 'bigwin-nick'; n.textContent = it.nick;
+      const meta = document.createElement('div'); meta.style.fontSize='12px'; meta.style.color='var(--muted)'; meta.textContent = new Date(it.ts).toLocaleString();
+      info.appendChild(n); info.appendChild(meta);
+      left.appendChild(em); left.appendChild(info);
+      const right = document.createElement('div'); right.className = 'bigwin-amount'; right.textContent = `+${it.amount} ₽`;
+      el.appendChild(left); el.appendChild(right);
+      bigWinsListEl.appendChild(el);
+    });
+  }
+
+  // FX wrappers for different levels
+  function smallWinFX(cx, cy){
+    spawnParticles(cx, cy, 40, 80, 10);
+    playWinSound('small');
+  }
+  function bigWinFX(cx, cy){
+    spawnParticles(cx, cy, 120, 220, 18, ['#ffd166','#fff59d','#60a5fa','#b4f8c8']);
+    flash(260);
+    playWinSound('big');
+    showWinBadge(0);
+  }
+  function hugeWinFX(cx, cy){
+    spawnParticles(cx, cy, 260, 320, 26, ['#ffd166','#fff59d','#6ee7b7','#60a5fa','#f472b6']);
+    flash(420);
+    playWinSound('huge');
+    showWinBadge(0);
+    // extra fireworks: radial bursts
+    for (let i=0;i<6;i++){
+      setTimeout(()=> spawnParticles(cx, cy, 60 + i*10, 260, 22, ['#ffd166','#60a5fa','#f472b6']), i*160);
+    }
+  }
+
+  // particle spawner using fxLoop
+  const particles = [];
+  let fxRunning = false;
+  function spawnParticles(x,y,count=40,spread=120,power=12,colors){
+    for (let i=0;i<count;i++){
+      particles.push({
+        x: x + (Math.random()-0.5)*spread,
+        y: y + (Math.random()-0.5)*spread,
+        vx: (Math.random()-0.5)*power,
+        vy: -Math.random()*power - 2,
+        r: Math.random()*8+3,
+        life: 0,
+        ttl: 80 + Math.floor(Math.random()*120),
+        col: (colors && colors[Math.floor(Math.random()*colors.length)]) || ['#ffd166','#6ee7b7','#60a5fa','#f472b6'][Math.floor(Math.random()*4)]
+      });
+    }
+    if (!fxRunning) fxTick();
+  }
+
+  function fxTick(){
+    fxRunning = true;
+    ctx.clearRect(0,0,W,H);
+    for (let i=particles.length-1;i>=0;i--){
+      const p = particles[i];
+      p.life++; p.vy += 0.32; p.x += p.vx; p.y += p.vy;
+      const alpha = Math.max(0, 1 - p.life / p.ttl);
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = p.col;
+      ctx.beginPath();
+      ctx.ellipse(p.x, p.y, p.r, p.r*0.6, p.life*0.03, 0, Math.PI*2);
+      ctx.fill();
+      if (p.life > p.ttl || p.y > H + 50) particles.splice(i,1);
+    }
+    ctx.globalAlpha = 1;
+    if (particles.length>0) requestAnimationFrame(fxTick);
+    else fxRunning = false;
+  }
+
+  // small helper to spawn from cells centers
+  function spawnFromCells(indices, baseCount=40, intensity=1){
+    const slots = Array.from(gridEl.children);
+    if (!indices || indices.length===0){
+      const rect = gridEl.getBoundingClientRect();
+      spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2, baseCount, 180, 14);
+      return;
+    }
+    indices.forEach(idx => {
       const s = slots[idx];
       if (!s) return;
       const r = s.getBoundingClientRect();
-      Confetti.spawn(r.left + r.width/2, r.top + r.height/2, 24 + intensity*8, 80, 10 + intensity*2);
+      spawnParticles(r.left + r.width/2, r.top + r.height/2, Math.max(12, Math.floor(baseCount / indices.length)), 80 + intensity*10, 10 + intensity*3);
     });
-    const rect = gridEl.getBoundingClientRect();
-    triggerExplosion(rect.left + rect.width/2, rect.top + rect.height/2, intensity);
   }
 
-  function runSpin(){
-    const bet = getBetValue();
-    if (bet <= 0){ alert('Введите ставку ≥ 1'); return; }
-    if (bet > balance){ alert('Недостаточно средств'); return; }
+  // seed view
+  function seedView(){
+    const base = Array.from({length:SLOT_COUNT}, (_,i) => EMOJI_POOL[(i*2)%EMOJI_POOL.length]);
+    animateGrid(base);
+  }
+  seedView();
 
+  // update UI state
+  function refreshUI(){
+    updateBalanceUI();
+    updateVaultUI();
+    freeSpinsEl.textContent = freeSpins;
+    boostCountEl.textContent = boostCount;
+    streakEl.textContent = streak;
+    loyaltyEl.textContent = `${Math.min(10, Math.floor(streak/3)*2)}%`;
+    renderBigWins();
+  }
+  refreshUI();
+
+  // spin logic
+  function getBet(){
+    let b = Math.floor(Number(betInput.value) || 0);
+    if (b < 1) b = 1;
+    if (b > balance) b = balance;
+    betInput.value = b;
+    return b;
+  }
+
+  function runSpin(useFree=false){
+    let bet = getBet();
+    if (useFree && freeSpins > 0){
+      bet = 0;
+      freeSpins--; safeSetItem('freeSpins', String(freeSpins));
+    } else {
+      if (bet > balance) { alert('Недостаточно средств'); return; }
+      balance -= bet; safeSetItem('balance', String(balance));
+    }
+    refreshUI();
     spinBtn.disabled = true;
-    balance -= bet; updateBalanceUI();
 
-    const grid = generateGrid();
-    animateGrid(grid);
+    // generate result with bias from global luck and boosters
+    const luck = 1 + Math.min(0.5, Math.log( (Number(onlineEl.textContent) || 1) + 1 ) * 0.06);
+    const favor = Math.min(0.28*(luck-1), 0.45) * (dynSelect.value === 'high' ? 1.6 : (dynSelect.value === 'low' ? 0.7 : 1));
+    const arr = [];
+    for (let i=0;i<SLOT_COUNT;i++){
+      if (i>0 && Math.random() < favor) {
+        if (Math.random() < 0.68) arr.push(arr[i-1]);
+        else arr.push(arr[Math.floor(Math.random()*i)]);
+      } else arr.push(EMOJI_POOL[Math.floor(Math.random()*EMOJI_POOL.length)]);
+    }
 
-    const lineResults = computeLineScores(grid);
-    const { payout, net, totalMul, winningCellsFlat } = payoutFromLines(bet, lineResults);
+    animateGrid(arr);
 
-    setTimeout(()=> {
-      if (payout > 0){ balance += payout; updateBalanceUI(); }
+    const lineResults = computeLineScores(arr);
+    const payoutObj = payoutForBet(bet, lineResults);
+    let payout = payoutObj.payout;
+    // apply booster multiplier
+    if (boostCount > 0) {
+      payout = Math.round(payout * 1.5);
+      boostCount = Math.max(0, boostCount - 1);
+      safeSetItem('boostCount', String(boostCount));
+    }
 
-      if (payout > bet){
-        scoreText.textContent = `BIG WIN! +${payout - bet} ₽  (x${totalMul.toFixed(2)})`;
-      } else if (payout === bet){
-        scoreText.textContent = `Ничья — возвращена ставка ${payout} ₽`;
+    setTimeout(()=>{
+      if (payout > 0) { balance += payout; safeSetItem('balance', String(balance)); }
+      const net = payout - bet;
+      // display text
+      if (net > 0) {
+        scoreText.textContent = `BIG WIN! +${net} ₽  (пayout ${payout} ₽)`;
+      } else if (net === 0) {
+        scoreText.textContent = `Ничья — вернули ${payout} ₽`;
       } else {
-        scoreText.textContent = `Проигрыш ${bet - payout} ₽`;
+        scoreText.textContent = `Проигрыш ${-net} ₽`;
       }
       scoreText.classList.remove('pop'); void scoreText.offsetWidth; scoreText.classList.add('pop');
 
-      const bigLines = lineResults.filter(lr => lr.bestCount >= 3);
-      if (bigLines.length > 0){
-        const bigCells = [];
-        bigLines.forEach(lr => lr.cells.forEach(([r,c]) => bigCells.push(r*COLS + c)));
-        const uniqueBigCells = [...new Set(bigCells)];
-        const intensity = Math.min(4, bigLines.length + Math.floor(totalMul/3));
-        triggerExplosionFromCells(uniqueBigCells, intensity);
-
-        const netGain = payout - bet;
-        const entry = { nick: nickInput.value || 'NewPlayer', emoji: lineResults[0].bestEmoji || grid[Math.floor(Math.random()*grid.length)], amount: netGain, bet, payout, multiplier: totalMul, ts: Date.now() };
-        if (netGain >= BIG_WIN_NET_MIN || totalMul >= BIG_WIN_MULT_MIN) {
-          pushBigWin(entry);
-        } else if (netGain > 0) {
-          pushBigWin(entry);
-        }
-      } else if (winningCellsFlat.length > 0 && payout > 0){
-        const rect = gridEl.getBoundingClientRect();
-        Confetti.spawn(rect.left + rect.width/2, rect.top + rect.height/2, Math.min(120, 6 + Math.floor(payout/2)));
+      // determine effect level
+      const rect = gridEl.getBoundingClientRect();
+      if (net >= HUGE_WIN_NET_MIN) {
+        hugeWinFX(rect.left + rect.width/2, rect.top + rect.height/2);
+        showWinBadge(net);
+      } else if (net >= BIG_WIN_NET_MIN) {
+        bigWinFX(rect.left + rect.width/2, rect.top + rect.height/2);
+        showWinBadge(net);
+      } else if (net > 0) {
+        smallWinFX(rect.left + rect.width/2, rect.top + rect.height/2);
       }
 
-      animateGrid(grid, winningCellsFlat);
-      if (!db) loadLocalBigWins();
+      // save big win entry if notable
+      if (net >= 50) {
+        addBigWin({ nick: nickInput.value || nick, emoji: lineResults.find(l=>l.bestCount>=3)?.bestEmoji || arr[4], amount: net, bet, payout, multiplier: payout / Math.max(1, bet), ts: Date.now() });
+      }
+
+      // small cashback accumulation to vault (loyalty)
+      const loyalty = Math.min(0.10, Math.floor(streak/3)*0.02); // e.g. 2% per 3-day streak up to 10%
+      const cashback = Math.floor(Math.abs(net) * loyalty);
+      vault += cashback; safeSetItem('vault', String(vault));
+      safeSetItem('balance', String(balance));
+      refreshUI();
+
       spinBtn.disabled = false;
-    }, 600);
+    }, 640);
   }
 
-  // small helpers & bindings
-  spinBtn.addEventListener('click', runSpin);
-  startBtn.addEventListener('click', ()=> alert('Игра готова. Нажмите "Запустить поток"'));
-  resetBtn.addEventListener('click', ()=> { if (confirm('Сбросить локальные данные?')) { localStorage.clear(); location.reload(); }});
-  minBetBtn.addEventListener('click', ()=> betInput.value = 1);
-  halfBetBtn.addEventListener('click', ()=> betInput.value = Math.max(1, Math.floor(balance/2)));
-  maxBetBtn.addEventListener('click', ()=> betInput.value = balance);
-  nickInput.addEventListener('input', ()=> { nick = nickInput.value || 'NewPlayer'; safeSetItem('nick', nick); });
-  dynSelect.addEventListener('change', ()=> { dyn = dynSelect.value; safeSetItem('dyn', dyn); });
+  // bonuses & purchases
+  document.getElementById('buyBoost').addEventListener('click', ()=>{
+    const price = 5000;
+    if (balance < price) return alert('Недостаточно средств');
+    if (!confirm(`Купить Booster x1.5 (5 спинов) за ${price} ₽?`)) return;
+    balance -= price; boostCount += 5;
+    safeSetItem('boostCount', String(boostCount));
+    safeSetItem('balance', String(balance));
+    refreshUI();
+  });
 
-  // seed
-  (function seed(){
-    const base = Array.from({length:SLOT_COUNT}, (_,i) => EMOJI_POOL[(i*2)%EMOJI_POOL.length]);
-    animateGrid(base);
-    scoreText.textContent = 'Нажмите «Запустить поток»';
-  })();
+  document.getElementById('grantFreeBtn').addEventListener('click', ()=>{
+    // small free gift to test: 1 free spin, costs nothing
+    freeSpins += 1; safeSetItem('freeSpins', String(freeSpins)); refreshUI();
+  });
 
-  // make sure UI reflects current balance/vault
+  freeSpinBtn.addEventListener('click', ()=>{
+    if (freeSpins <= 0) return alert('Free spins отсутствуют');
+    runSpin(true);
+  });
+
+  boostBtn.addEventListener('click', ()=>{
+    if (boostCount <= 0) return alert('Booster не активен');
+    // using boost consumes automatically in runSpin
+    alert('Booster будет применён автоматически к следующему спину');
+  });
+
+  spinBtn.addEventListener('click', ()=> runSpin(false));
+
+  // daily dice with streak and min 100
+  document.getElementById('dailyBtn').addEventListener('click', ()=>{
+    const now = Date.now();
+    const day = 24*60*60*1000;
+    if (now - lastDaily < day) {
+      const rem = day - (now - lastDaily);
+      alert('Кубик можно бросить через: ' + Math.ceil(rem/3600000) + ' ч');
+      return;
+    }
+    const roll = Math.floor(Math.random()*6) + 1;
+    const reward = 100 * roll;
+    balance += reward; safeSetItem('balance', String(balance));
+    // streak logic: if lastDaily within 48h, increment, else reset
+    if (now - lastDaily <= (48*60*60*1000)) streak += 1; else streak = 1;
+    lastDaily = now;
+    safeSetItem('lastDaily', String(lastDaily));
+    safeSetItem('streak', String(streak));
+    // reward free spins every 3-day streak
+    if (streak % 3 === 0) { freeSpins += 1; safeSetItem('freeSpins', String(freeSpins)); }
+    // also give boosted chance occasionally
+    if (roll >= 5) { boostCount += 1; safeSetItem('boostCount', String(boostCount)); }
+
+    const rect = gridEl.getBoundingClientRect();
+    hugeWinFX(rect.left + rect.width/2, rect.top + rect.height/2);
+    addBigWin({ nick: nickInput.value || nick, emoji: '🎲', amount: reward, bet: 0, payout: reward, multiplier: 0, ts: Date.now() });
+
+    refreshUI();
+    alert(`Выпало ${roll} — +${reward} ₽. Стрик: ${streak} дней`);
+  });
+
+  // clear big wins
+  clearBigWinsBtn.addEventListener('click', ()=> { if (!confirm('Очистить локальный список больших выигрышей?')) return; bigWins = []; localStorage.removeItem('localBigWins'); renderBigWins(); });
+
+  // clear bonuses (for testing)
+  clearBonusesBtn.addEventListener('click', ()=> {
+    if (!confirm('Сбросить бонусы и прогресс?')) return;
+    freeSpins = 0; boostCount = 0; streak = 0; lastDaily = 0;
+    safeSetItem('freeSpins','0'); safeSetItem('boostCount','0'); safeSetItem('streak','0'); safeSetItem('lastDaily','0');
+    refreshUI();
+  });
+
+  // save nick
+  saveNickBtn.addEventListener('click', ()=>{
+    nick = nickInput.value || 'Player';
+    safeSetItem('nick', nick);
+    alert('Ник сохранён: ' + nick);
+  });
+
+  // helper for effects thresholds
+  const HUGE_WIN_NET_MIN = 800;
+
+  // spawn particle wrapper to compute center and call FX
+  function spawnFromCells(indices, base, intensity){
+    const slots = Array.from(gridEl.children);
+    if (!indices || indices.length === 0) {
+      const rect = gridEl.getBoundingClientRect();
+      spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2, base, 160, 14);
+      return;
+    }
+    indices.forEach(idx=>{
+      const s = slots[idx];
+      if (!s) return;
+      const r = s.getBoundingClientRect();
+      spawnParticles(r.left + r.width/2, r.top + r.height/2, Math.max(20, Math.floor(base/indices.length)), 80 + intensity*10, 10 + intensity*3);
+    });
+  }
+
+  // expose animate and seed
+  refreshUI();
+
+  // play a tiny startup sound
+  setTimeout(()=> { playWinSound('small'); }, 300);
+
+  // convenience: ensure canvas size follows viewport
+  function resizeFX(){ W = fxCanvas.width = innerWidth; H = fxCanvas.height = innerHeight; }
+  window.addEventListener('resize', resizeFX); resizeFX();
+
+  // helper to spawnParticles (declared earlier in code block scope)
+  function spawnParticles(x,y,count,spread,power,colors){
+    // call fx function above
+    const evt = new CustomEvent('spawn', { detail: { x,y,count,spread,power,colors }});
+    // fallback to direct call
+    for (let i=0;i<count;i++){
+      particles.push({
+        x: x + (Math.random()-0.5)*spread,
+        y: y + (Math.random()-0.5)*spread,
+        vx: (Math.random()-0.5)*power,
+        vy: -Math.random()*power - 2,
+        r: Math.random()*8+3,
+        life: 0,
+        ttl: 80 + Math.floor(Math.random()*120),
+        col: (colors && colors[Math.floor(Math.random()*colors.length)]) || ['#ffd166','#6ee7b7','#60a5fa','#f472b6'][Math.floor(Math.random()*4)]
+      });
+    }
+    if (!fxRunning) fxTick();
+  }
+
+  // reuse earlier particle arrays
+  const particles = [];
+  let fxRunning = false;
+  function fxTick(){
+    fxRunning = true;
+    ctx.clearRect(0,0,W,H);
+    for (let i=particles.length-1;i>=0;i--){
+      const p = particles[i];
+      p.life++; p.vy += 0.32; p.x += p.vx; p.y += p.vy;
+      const alpha = Math.max(0, 1 - p.life / p.ttl);
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = p.col;
+      ctx.beginPath();
+      ctx.ellipse(p.x, p.y, p.r, p.r*0.6, p.life*0.03, 0, Math.PI*2);
+      ctx.fill();
+      if (p.life > p.ttl || p.y > H + 50) particles.splice(i,1);
+    }
+    ctx.globalAlpha = 1;
+    if (particles.length>0) requestAnimationFrame(fxTick); else fxRunning=false;
+  }
+
+  // animateGrid helper used earlier
+  function animateGrid(arr, winIndices=[]){
+    const slots = Array.from(gridEl.children);
+    slots.forEach((s,i)=>{
+      s.className = 'slot enter';
+      s.style.setProperty('--delay', `${(i%COLS)*0.04}s`);
+      s.textContent = arr[i] || '❔';
+      const onEnd = () => {
+        s.classList.remove('enter'); s.removeEventListener('animationend', onEnd);
+        if (winIndices.includes(i)){ s.classList.add('win'); setTimeout(()=> s.classList.remove('win'), 1200); }
+      };
+      s.addEventListener('animationend', onEnd);
+    });
+  }
+
+  // override previous definitions for computeLineScores/payoutFromLines used above
+  function computeLineScores(gridArr){
+    const lines = [];
+    // rows
+    for (let r=0;r<ROWS;r++){
+      const vals = [];
+      for (let c=0;c<COLS;c++) vals.push(gridArr[r*COLS + c]);
+      lines.push(vals);
+    }
+    // cols
+    for (let c=0;c<COLS;c++){
+      const vals=[];
+      for (let r=0;r<ROWS;r++) vals.push(gridArr[r*COLS + c]);
+      lines.push(vals);
+    }
+    // diags
+    lines.push([gridArr[0], gridArr[4], gridArr[8]]);
+    lines.push([gridArr[2], gridArr[4], gridArr[6]]);
+    return lines.map(values=>{
+      const freq = {}; values.forEach(v=>freq[v]=(freq[v]||0)+1);
+      const bestCount = Math.max(...Object.values(freq));
+      const bestEmoji = Object.keys(freq).find(k=>freq[k]===bestCount);
+      return { values, bestCount, bestEmoji };
+    });
+  }
+
+  function payoutForBet(bet, lineResults){
+    let mul = 0;
+    const winningCells = [];
+    lineResults.forEach((lr, li)=>{
+      if (lr.bestCount >= 3) {
+        if (lr.bestCount === 3) mul += 3;
+        else if (lr.bestCount === 4) mul += 6;
+        else mul += 12;
+        // compute indices depending on line index
+        if (li < 3){ const r = li; for (let c=0;c<COLS;c++) winningCells.push(r*COLS + c); }
+        else if (li < 6){ const c = li - 3; for (let r=0;r<ROWS;r++) winningCells.push(r*COLS + c); }
+        else if (li === 6) winningCells.push(0,4,8); else if (li === 7) winningCells.push(2,4,6);
+      } else if (lr.bestCount === 2) {
+        mul += 0.6;
+      }
+    });
+    mul = Math.min(mul, 50);
+    const payout = Math.round(bet * mul);
+    return { payout, multiplier: mul, winningCells: [...new Set(winningCells)] };
+  }
+
+  function addBigWin(entry){
+    bigWins.unshift(entry);
+    if (bigWins.length > 200) bigWins = bigWins.slice(0,200);
+    safeSetItem('localBigWins', JSON.stringify(bigWins));
+    renderBigWins();
+  }
+
+  function renderBigWins(){
+    bigWinsListEl.innerHTML = '';
+    if (!bigWins || bigWins.length === 0){
+      bigWinsListEl.innerHTML = '<div style="color:var(--muted);padding:8px">Пока нет больших выигрышей</div>';
+      return;
+    }
+    bigWins.slice(0,50).forEach(it=>{
+      const div = document.createElement('div'); div.className='bigwin-item';
+      const left = document.createElement('div'); left.className='bigwin-left';
+      const em = document.createElement('div'); em.className='bigwin-emoji'; em.textContent = it.emoji || '🎉';
+      const info = document.createElement('div'); const n=document.createElement('div'); n.className='bigwin-nick'; n.textContent = it.nick;
+      const meta = document.createElement('div'); meta.style.fontSize='12px'; meta.style.color='var(--muted)'; meta.textContent = new Date(it.ts).toLocaleString();
+      info.appendChild(n); info.appendChild(meta); left.appendChild(em); left.appendChild(info);
+      const right = document.createElement('div'); right.className='bigwin-amount'; right.textContent = `+${it.amount} ₽`;
+      div.appendChild(left); div.appendChild(right); bigWinsListEl.appendChild(div);
+    });
+  }
+
+  // Load stored bigWins
+  let bigWins = JSON.parse(localStorage.getItem('localBigWins') || '[]');
+  renderBigWins();
+
+  // initial UI
+  function refreshUI(){
+    updateBalanceUI();
+    updateVaultUI();
+    freeSpinsEl.textContent = freeSpins;
+    boostCountEl.textContent = boostCount;
+    streakEl.textContent = streak;
+    loyaltyEl.textContent = `${Math.min(10, Math.floor(streak/3)*2)}%`;
+  }
+  refreshUI();
+
+  // bind remaining UI
+  document.getElementById('saveNickBtn').addEventListener('click', ()=>{
+    nick = nickInput.value || 'Player';
+    safeSetItem('nick', nick);
+    alert('Ник сохранён');
+  });
+
+  document.getElementById('minBet').addEventListener('click', ()=> betInput.value = 1);
+  document.getElementById('halfBet').addEventListener('click', ()=> betInput.value = Math.max(1, Math.floor(balance/2)));
+  document.getElementById('maxBet').addEventListener('click', ()=> betInput.value = balance);
+
+  // link spin with UI buttons already set above (spinBtn etc.)
+
+  // ensure canvas context vars
+  let ctx = fxCanvas.getContext('2d');
+
+  // final tiny adjustments
   updateBalanceUI();
   updateVaultUI();
-  if (lastCashbackEl) lastCashbackEl.textContent = localStorage.getItem('lastCashbackCredit') || '—';
+  renderBigWins();
 
   </script>
 </body>
