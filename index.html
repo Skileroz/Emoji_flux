@@ -3,73 +3,93 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Emoji Flux — Бонусы & Эффекты</title>
+  <title>Emoji Flux — Enhanced (fixed)</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg1:#060916; --bg2:#07162a;
+      --bg-1: #071029;
+      --bg-2: #0b1830;
       --card: rgba(255,255,255,0.02);
       --accent: #ffd166;
-      --muted: #bcd3ea;
-      --slot-size:84px; --slot-gap:12px;
-      --ui-font: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      --accent-2: #6ee7b7;
+      --muted: #b7c9e0;
+      --slot-size: 92px;
+      --slot-gap: 14px;
     }
+
     html,body{height:100%}
     body{
-      margin:0; background:
-        radial-gradient(800px 400px at 10% 10%, rgba(15,30,60,0.14), transparent),
-        linear-gradient(180deg,var(--bg1),var(--bg2));
-      color:var(--muted); font-family:var(--ui-font); -webkit-font-smoothing:antialiased;
-      display:flex; flex-direction:column;
+      margin:0;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      color:var(--muted);
+      background:
+        radial-gradient(800px 400px at 10% 10%, rgba(12,24,48,0.18), transparent),
+        linear-gradient(180deg,var(--bg-1),var(--bg-2));
+      -webkit-font-smoothing:antialiased;
+      display:flex;
+      flex-direction:column;
     }
 
-    header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
-    .brand{font-weight:800;color:var(--accent);letter-spacing:.6px}
-    .controls{display:flex;gap:10px;align-items:center}
+    header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.02);
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+    }
+    .brand{font-weight:700;color:var(--accent);letter-spacing:1px;font-size:1.05rem;text-shadow: 0 8px 30px rgba(0,0,0,0.5);}
+    .controls{display:flex;gap:12px;align-items:center}
+    .controls input, .controls select{background:transparent;border:1px solid rgba(255,255,255,0.05);padding:8px;border-radius:10px;color:inherit}
+    .controls button{padding:8px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),#ffb86b);font-weight:700;color:#08101a;cursor:pointer}
 
-    main{display:flex;gap:18px;padding:12px;flex:1;align-items:flex-start}
-    .field{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
-    .panel{width:100%;max-width:980px;padding:16px;border-radius:12px;background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.008));box-shadow:0 12px 40px rgba(0,0,0,0.6);display:flex;flex-direction:column;align-items:center;gap:14px}
+    main{display:flex;gap:18px;padding:18px;align-items:flex-start;flex:1}
+    .field{flex:1;display:flex;flex-direction:column;align-items:center;gap:14px}
+    .panel{width:100%;max-width:980px;padding:18px;border-radius:14px;background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.008));box-shadow: 0 18px 50px rgba(0,0,0,0.65);display:flex;flex-direction:column;align-items:center;gap:14px;}
 
-    .top-controls{display:flex;justify-content:space-between;align-items:center;width:100%}
+    .top-controls{display:flex;align-items:center;justify-content:space-between;width:100%}
     .bet-group{display:flex;gap:8px;align-items:center}
+    input[type="number"]{padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
 
     .grid-wrap{position:relative}
-    .grid{display:grid;grid-template-columns:repeat(3,var(--slot-size));grid-gap:var(--slot-gap);padding:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:10px}
-    .slot{width:var(--slot-size);height:var(--slot-size);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:40px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 10px 30px rgba(0,0,0,0.6);transition:transform .22s,filter .18s}
-    .slot.enter{opacity:0;transform:translateY(-28px) scale(.96);animation:slot-in .46s both}
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, var(--slot-size));
+      grid-gap: var(--slot-gap);
+      padding:14px;border-radius:12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+    .slot{width:var(--slot-size); height:var(--slot-size); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:44px; color:#fff; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow: 0 10px 28px rgba(0,0,0,0.6), inset 0 -8px 16px rgba(0,0,0,0.28); transform-origin:center; transition: transform .26s cubic-bezier(.2,.9,.3,1), box-shadow .2s;}
+    .slot.enter{opacity:0; transform: translateY(-28px) scale(.96); animation:slot-in .46s both}
     @keyframes slot-in{0%{opacity:0;transform:translateY(-28px) scale(.96)}60%{transform:translateY(6px) scale(1.06)}100%{opacity:1;transform:translateY(0) scale(1)}}
-    .slot.win{transform:scale(1.1);filter:brightness(1.15);box-shadow:0 30px 120px rgba(255,200,80,0.16)}
+    .slot.win{box-shadow:0 18px 80px rgba(255,200,80,0.14); transform:scale(1.08); filter:brightness(1.12)}
 
     .actions{display:flex;gap:12px}
-    button{padding:8px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),#ffb86b);cursor:pointer;font-weight:700;color:#08101a}
+    .actions button{padding:10px 14px;border-radius:12px;border:none;background:linear-gradient(90deg,var(--accent),#ffb86b);font-weight:700;cursor:pointer}
 
-    aside{width:360px;display:flex;flex-direction:column;gap:12px}
+    aside{width:340px;display:flex;flex-direction:column;gap:12px}
     .aside-section{background:var(--card);padding:12px;border-radius:10px}
     .small{font-size:0.92rem;color:var(--muted)}
     .balance{font-weight:800;color:var(--accent)}
 
-    /* visual fx layers */
-    canvas#fxCanvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:90}
-    .win-badge{position:fixed;left:50%;top:8%;transform:translateX(-50%);z-index:100;font-family:Impact, system-ui, sans-serif;font-size:56px;color:#fff;padding:14px 28px;border-radius:12px;opacity:0;pointer-events:none;background:linear-gradient(90deg,#ffd166,#ffb86b);text-shadow:0 6px 28px rgba(0,0,0,0.5)}
+    .win-badge{position:fixed;left:50%;top:10%;transform:translateX(-50%);z-index:120;font-family:"Bebas Neue", sans-serif;font-size:56px;color:#08101a;padding:16px 30px;border-radius:16px;background:linear-gradient(90deg,#fff1c8,#ffd166);box-shadow: 0 22px 60px rgba(255,200,80,0.16), 0 6px 24px rgba(0,0,0,0.5);opacity:0;pointer-events:none}
     .win-badge.show{animation:winpop .9s forwards}
-    @keyframes winpop{0%{transform:translateX(-50%) translateY(-12px) scale(.8);opacity:0}40%{transform:translateX(-50%) translateY(6px) scale(1.14);opacity:1}100%{transform:translateX(-50%) translateY(0) scale(1)}}
+    @keyframes winpop{0%{transform:translateX(-50%) translateY(-12px) scale(.75);opacity:0}40%{transform:translateX(-50%) translateY(4px) scale(1.16);opacity:1}100%{transform:translateX(-50%) translateY(0) scale(1)}}
 
-    /* more pronounced glow on body during huge wins */
-    .flash{position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 30%, rgba(255,240,200,0.95), rgba(255,240,200,0.4) 10%, transparent 30%);opacity:0;transition:opacity .12s linear;z-index:80}
+    canvas#fx{position:fixed;left:0;top:0;pointer-events:none;z-index:100}
 
-    @media (max-width:960px){aside{width:100%}main{flex-direction:column} .win-badge{font-size:44px}}
+    @media (max-width:900px){main{flex-direction:column} aside{width:100%} .win-badge{font-size:44px}}
   </style>
 </head>
 <body>
-  <div class="flash" id="flash"></div>
+  <canvas id="fx"></canvas>
   <div class="win-badge" id="winBadge">BIG WIN</div>
-  <canvas id="fxCanvas"></canvas>
 
   <header>
-    <div class="brand">Emoji Flux — бонусы & эффекты</div>
+    <div class="brand">Emoji Flux — Enhanced</div>
     <div class="controls">
-      <input id="nick" type="text" placeholder="Никнейм" maxlength="20" style="padding:8px;border-radius:8px" />
-      <button id="saveNickBtn">Сохранить</button>
+      <input id="nick" type="text" placeholder="Никнейм" maxlength="20" />
+      <button id="saveNick">Сохранить</button>
     </div>
   </header>
 
@@ -79,12 +99,12 @@
         <div class="top-controls">
           <div class="bet-group">
             <label class="small">Ставка</label>
-            <input id="betInput" type="number" value="20" min="1" style="width:110px;padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04)" />
-            <button id="minBet">Мин</button>
-            <button id="halfBet">1/2</button>
-            <button id="maxBet">Макс</button>
+            <input id="bet" type="number" min="1" value="20" />
+            <button id="min">Мин</button>
+            <button id="half">1/2</button>
+            <button id="max">Макс</button>
           </div>
-          <div class="score" id="scoreText">Нажмите «Запустить поток»</div>
+          <div class="score" id="score">Нажмите «Запустить поток»</div>
         </div>
 
         <div class="grid-wrap" aria-live="polite">
@@ -92,182 +112,135 @@
         </div>
 
         <div class="actions">
-          <button id="spinBtn">Запустить поток</button>
-          <button id="freeSpinBtn">Использовать Free Spin</button>
-          <button id="boostBtn">Использовать x1.5 Booster</button>
+          <button id="spin">Запустить поток</button>
+          <button id="daily">Ежедневный кубик</button>
         </div>
       </div>
     </section>
 
     <aside>
       <div class="aside-section">
-        <div>Баланс: <span class="balance" id="balanceText">—</span></div>
-        <div class="small">Кэшбек: <span id="vaultText">0</span> (капитал)</div>
+        <div>Баланс: <span class="balance" id="balance">—</span></div>
+        <div class="small">Кэшбек (vault): <span id="vault">0</span></div>
       </div>
 
       <div class="aside-section">
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-weight:700">Бонусы</div>
-          <button id="clearBonuses" style="background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px;border-radius:8px;color:var(--muted)">Сброс</button>
+          <div style="font-weight:700">Большие выигрыши</div>
+          <button id="clearBig">Очистить</button>
         </div>
-        <div style="margin-top:8px" class="small">
-          <div>Ежедневный кубик: <button id="dailyBtn">Бросить кубик</button></div>
-          <div style="margin-top:8px">Стрик дней: <span id="streak">0</span></div>
-          <div style="margin-top:8px">Free Spins: <strong id="freeSpins">0</strong> <button id="grantFreeBtn">Получить +1</button></div>
-          <div style="margin-top:8px">Booster x1.5 (следующие N спинов): <strong id="boostCount">0</strong> <button id="buyBoost">Купить за 5000 ₽</button></div>
-          <div style="margin-top:8px">Лояльность (повышенный кэшбек): <span id="loyalty">0%</span></div>
-        </div>
+        <div id="bigList" style="margin-top:8px;max-height:260px;overflow:auto"></div>
       </div>
 
       <div class="aside-section">
-        <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:700">Большие выигрыши</div><button id="clearBigWins" style="background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px;border-radius:8px;color:var(--muted)">Очистить</button></div>
-        <div class="bigwins-list" id="bigWinsList" style="margin-top:8px;max-height:220px;overflow:auto"></div>
+        <div class="small">Онлайн: <strong id="online">—</strong></div>
+        <div class="small">Глоб. удача: <span id="luck">1.00</span></div>
       </div>
     </aside>
   </main>
 
   <script>
-  // Emoji Flux — Bonuses & Improved Effects
-  // All client-side prototype. Data persisted in localStorage.
+  // Single-file fixed implementation — no duplicate declarations
 
-  // ===== Config =====
-  const EMOJI_POOL = ['🔥','⚡️','💧','🍀','🌟','🎯','🍎','💎','🌊','☄️','✨','🎵','🎲'];
-  const ROWS = 3;
-  const COLS = 3;
-  const SLOT_COUNT = ROWS * COLS;
+  // Config
+  const EMOJI = ['🔥','⚡️','💧','🍀','🌟','🎯','🍎','💎','🌊','☄️','✨','🎵','🎲'];
+  const ROWS = 3, COLS = 3, SLOT_COUNT = ROWS * COLS;
 
-  // thresholds for effects
-  const BIG_WIN_NET_MIN = 200;
-  const HUGE_WIN_NET_MIN = 800;
+  // DOM refs
+  const gridEl = document.getElementById('grid');
+  const balanceEl = document.getElementById('balance');
+  const vaultEl = document.getElementById('vault');
+  const scoreEl = document.getElementById('score');
+  const bigListEl = document.getElementById('bigList');
+  const onlineEl = document.getElementById('online');
+  const luckEl = document.getElementById('luck');
+  const fxCanvas = document.getElementById('fx');
+  const winBadge = document.getElementById('winBadge');
 
-  // ===== State (persisted) =====
+  const nickInput = document.getElementById('nick');
+  const saveNickBtn = document.getElementById('saveNick');
+  const spinBtn = document.getElementById('spin');
+  const dailyBtn = document.getElementById('daily');
+  const minBtn = document.getElementById('min');
+  const halfBtn = document.getElementById('half');
+  const maxBtn = document.getElementById('max');
+  const betInput = document.getElementById('bet');
+  const clearBigBtn = document.getElementById('clearBig');
+
+  // State (persisted)
   let nick = localStorage.getItem('nick') || 'Player';
+  nickInput.value = nick;
   let balance = Number(localStorage.getItem('balance')) || 1000;
   let vault = Number(localStorage.getItem('vault')) || 0;
-  let freeSpins = Number(localStorage.getItem('freeSpins')) || 0;
-  let boostCount = Number(localStorage.getItem('boostCount')) || 0; // number of boosted spins (1.5x)
-  let streak = Number(localStorage.getItem('streak')) || 0; // daily streak days
-  let lastDaily = Number(localStorage.getItem('lastDaily') || 0);
   let bigWins = JSON.parse(localStorage.getItem('localBigWins') || '[]');
 
-  // UI refs
-  const gridEl = document.getElementById('grid');
-  const balanceText = document.getElementById('balanceText');
-  const vaultText = document.getElementById('vaultText');
-  const freeSpinsEl = document.getElementById('freeSpins');
-  const boostCountEl = document.getElementById('boostCount');
-  const streakEl = document.getElementById('streak');
-  const loyaltyEl = document.getElementById('loyalty');
-  const winBadge = document.getElementById('winBadge');
-  const fxCanvas = document.getElementById('fxCanvas');
-  const bigWinsListEl = document.getElementById('bigWinsList');
-  const flashEl = document.getElementById('flash');
-
-  // buttons
-  const spinBtn = document.getElementById('spinBtn');
-  const freeSpinBtn = document.getElementById('freeSpinBtn');
-  const boostBtn = document.getElementById('boostBtn');
-  const dailyBtn = document.getElementById('dailyBtn');
-  const grantFreeBtn = document.getElementById('grantFreeBtn');
-  const buyBoostBtn = document.getElementById('buyBoost');
-  const buyBoost = document.getElementById('buyBoost');
-  const clearBigWinsBtn = document.getElementById('clearBigWins');
-  const clearBonusesBtn = document.getElementById('clearBonuses');
-  const saveNickBtn = document.getElementById('saveNickBtn');
-
-  // seed nick val
-  const nickInput = document.getElementById('nick');
-  nickInput.value = nick;
-
-  // sound (WebAudio)
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  const audioCtx = AudioCtx ? new AudioCtx() : null;
-
-  function playTone(freq=440, duration=0.12, type='sine', gain=0.08){
-    if (!audioCtx) return;
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    o.type = type; o.frequency.value = freq;
-    g.gain.value = gain;
-    o.connect(g); g.connect(audioCtx.destination);
-    o.start();
-    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-    setTimeout(()=>{ try{ o.stop(); }catch(e){} }, duration*1000+10);
-  }
-
-  function playWinSound(level='small'){
-    if (!audioCtx) return;
-    if (level === 'small') { playTone(880,0.08,'sine',0.06); }
-    else if (level === 'big') { playTone(560,0.16,'triangle',0.12); playTone(1320,0.12,'sine',0.08); }
-    else if (level === 'huge') { playTone(420,0.26,'sawtooth',0.16); playTone(1100,0.2,'sine',0.12); }
-  }
-
-  // FX canvas (particles, rays)
-  const c = fxCanvas;
-  const ctx = c.getContext('2d');
+  // FX canvas sizing
   let W = 0, H = 0;
-  function resize(){ W = c.width = innerWidth; H = c.height = innerHeight; }
-  addEventListener('resize', resize); resize();
+  function resizeFX(){ W = fxCanvas.width = innerWidth; H = fxCanvas.height = innerHeight; }
+  addEventListener('resize', resizeFX); resizeFX();
 
-  // particles store
+  // Particles array (declared once)
   const particles = [];
 
-  function spawnParticles(x,y,count=40,spread=120,power=12,colors){
+  const fxCtx = fxCanvas.getContext('2d');
+
+  function spawnParticles(x,y,count=60,spread=160,power=16,colors){
     for (let i=0;i<count;i++){
       particles.push({
         x: x + (Math.random()-0.5)*spread,
         y: y + (Math.random()-0.5)*spread,
         vx: (Math.random()-0.5)*power,
-        vy: -Math.random()*power - 2,
-        r: Math.random()*6+4,
+        vy: -Math.random()*power - 4,
+        r: Math.random()*8+4,
         life: 0,
-        ttl: 60 + Math.floor(Math.random()*80),
+        ttl: 80 + Math.floor(Math.random()*100),
         col: (colors && colors[Math.floor(Math.random()*colors.length)]) || ['#ffd166','#6ee7b7','#60a5fa','#f472b6'][Math.floor(Math.random()*4)]
       });
     }
-    if (!fxAnimating) fxLoop();
+    if (!fxRunning) fxTick();
   }
 
-  let fxAnimating = false;
-  function fxLoop(){
-    fxAnimating = true;
-    ctx.clearRect(0,0,W,H);
+  let fxRunning = false;
+  function fxTick(){
+    fxRunning = true;
+    fxCtx.clearRect(0,0,W,H);
     for (let i=particles.length-1;i>=0;i--){
       const p = particles[i];
-      p.life++; p.vy += 0.22; p.x += p.vx; p.y += p.vy;
-      ctx.globalAlpha = Math.max(0, 1 - p.life / p.ttl);
-      ctx.fillStyle = p.col;
-      ctx.beginPath();
-      ctx.ellipse(p.x, p.y, p.r, p.r*0.6, p.life*0.05, 0, Math.PI*2);
-      ctx.fill();
+      p.life++; p.vy += 0.34; p.x += p.vx; p.y += p.vy;
+      fxCtx.globalAlpha = Math.max(0, 1 - p.life / p.ttl);
+      fxCtx.fillStyle = p.col;
+      fxCtx.beginPath();
+      fxCtx.ellipse(p.x, p.y, p.r, p.r*0.6, p.life*0.03, 0, Math.PI*2);
+      fxCtx.fill();
       if (p.life > p.ttl || p.y > H + 50) particles.splice(i,1);
     }
-    ctx.globalAlpha = 1;
-    if (particles.length > 0) requestAnimationFrame(fxLoop);
-    else fxAnimating = false;
+    fxCtx.globalAlpha = 1;
+    if (particles.length>0) requestAnimationFrame(fxTick);
+    else fxRunning = false;
   }
 
-  // ray flash
-  function flash(duration=260){
-    flashEl.style.opacity = '1';
-    setTimeout(()=> flashEl.style.opacity = '0', duration);
+  // WEB AUDIO (single definitions)
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const audioCtx = AudioCtx ? new AudioCtx() : null;
+  function tone(freq, duration=0.12, type='sine', vol=0.06){
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.value = vol;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+    setTimeout(()=> { try{ o.stop(); }catch(e){} }, duration*1000+20);
+  }
+  function winSound(level='small'){
+    if (!audioCtx) return;
+    if (level==='small'){ tone(880,0.06,'sine',0.05); }
+    else if (level==='big'){ tone(540,0.14,'triangle',0.11); tone(1300,0.12,'sine',0.08); }
+    else { tone(420,0.26,'sawtooth',0.14); tone(1100,0.22,'sine',0.12); }
   }
 
-  // big win badge
-  function showWinBadge(amount){
-    winBadge.textContent = 'BIG WIN';
-    const sub = document.createElement('div');
-    sub.style.fontSize = '16px';
-    sub.style.fontWeight = '700';
-    sub.style.marginTop = '6px';
-    sub.textContent = `+${amount} ₽`;
-    winBadge.innerHTML = 'BIG WIN';
-    winBadge.appendChild(sub);
-    winBadge.classList.add('show');
-    setTimeout(()=> winBadge.classList.remove('show'), 2200);
-  }
-
-  // seed grid
+  // Grid helpers
   function createGrid(){
     gridEl.innerHTML = '';
     for (let i=0;i<SLOT_COUNT;i++){
@@ -278,564 +251,175 @@
   }
   createGrid();
 
-  function animateGrid(arr, winIndices=[]){
+  function animateGrid(arr, winIdx=[]){
     const slots = Array.from(gridEl.children);
     slots.forEach((s,i)=>{
       s.className = 'slot enter';
-      s.style.setProperty('--delay', `${(i%COLS)*0.04}s`);
+      s.style.setProperty('--delay', `${(i%COLS)*0.05}s`);
       s.textContent = arr[i] || '❔';
       const onEnd = () => {
         s.classList.remove('enter'); s.removeEventListener('animationend', onEnd);
-        if (winIndices.includes(i)){ s.classList.add('win'); setTimeout(()=> s.classList.remove('win'), 1200); }
+        if (winIdx.includes(i)){ s.classList.add('win'); setTimeout(()=> s.classList.remove('win'), 1000); }
       };
       s.addEventListener('animationend', onEnd);
     });
   }
 
-  function computeScoreGrid(arr){
-    // freq overall and best runs per line (rows/cols/diags)
-    const freq = {};
-    arr.forEach(e => freq[e] = (freq[e]||0)+1);
-    const best = Math.max(...Object.values(freq));
-    // compute runs horizontally
-    let run = 1, longest = 1;
-    for (let i=1;i<arr.length;i++){
-      if (arr[i] === arr[i-1]) { run++; longest = Math.max(longest, run); } else run = 1;
-    }
-    return { best, longest, freq };
-  }
-
-  function computeLineScores(gridArr){
-    // lines: 3 rows, 3 cols, 2 diags
+  function computeLines(arr){
     const lines = [];
-    // rows
-    for (let r=0;r<ROWS;r++){
-      lines.push(Array.from({length:COLS}, (_,c)=> gridArr[r*COLS + c]));
-    }
-    // cols
-    for (let c=0;c<COLS;c++){
-      const col = [];
-      for (let r=0;r<ROWS;r++) col.push(gridArr[r*COLS + c]);
-      lines.push(col);
-    }
-    // diags
-    lines.push([gridArr[0*COLS + 0], gridArr[1*COLS + 1], gridArr[2*COLS + 2]]);
-    lines.push([gridArr[0*COLS + 2], gridArr[1*COLS + 1], gridArr[2*COLS + 0]]);
-
-    // compute best counts and emoji per line
-    return lines.map(values=>{
-      const freq = {}; values.forEach(v=> freq[v] = (freq[v]||0)+1);
-      const bestCount = Math.max(...Object.values(freq));
-      const bestEmoji = Object.keys(freq).find(k=>freq[k]===bestCount);
-      return { values, bestCount, bestEmoji };
-    });
+    for (let r=0;r<ROWS;r++){ const vals=[]; for (let c=0;c<COLS;c++) vals.push(arr[r*COLS + c]); lines.push(vals); }
+    for (let c=0;c<COLS;c++){ const vals=[]; for (let r=0;r<ROWS;r++) vals.push(arr[r*COLS + c]); lines.push(vals); }
+    lines.push([arr[0],arr[4],arr[8]]); lines.push([arr[2],arr[4],arr[6]]);
+    return lines.map(v=>{ const freq={}; v.forEach(x=>freq[x]=(freq[x]||0)+1); const best = Math.max(...Object.values(freq)); const emoji = Object.keys(freq).find(k=>freq[k]===best); return { vals:v, bestCount: best, emoji }; });
   }
 
-  function payoutForBet(bet, lineResults){
-    // compute multiplier: sum per-line multipliers
-    let mul = 0;
-    const winningCells = [];
-    lineResults.forEach((lr, li) => {
-      if (lr.bestCount >= 3) {
-        mul += (lr.bestCount === 3 ? 3 : (lr.bestCount === 4 ? 6 : 12));
-        // find indices of winning cells to highlight - convert line index to cell indices
-        // For simplicity we'll highlight based on line type (rows 0-2, cols 3-5, diags 6-7)
-        // compute cells:
-        if (li < 3) { // row
-          const r = li;
-          for (let c=0;c<COLS;c++) winningCells.push(r*COLS + c);
-        } else if (li < 6) { // col
-          const c = li - 3;
-          for (let r=0;r<ROWS;r++) winningCells.push(r*COLS + c);
-        } else if (li === 6) { winningCells.push(0,4,8); }
-        else if (li === 7) { winningCells.push(2,4,6); }
-      } else if (lr.bestCount === 2) {
-        mul += 0.6;
-      }
+  function payout(bet, lines){
+    let mul = 0; let winCells = [];
+    lines.forEach((lr, idx) => {
+      const c = lr.bestCount;
+      if (c >= 3){
+        mul += (c===3?3:(c===4?6:12));
+        if (idx < 3){ const r=idx; for (let cc=0;cc<COLS;cc++) winCells.push(r*COLS+cc); }
+        else if (idx < 6){ const cc = idx-3; for (let rr=0;rr<ROWS;rr++) winCells.push(rr*COLS+cc); }
+        else if (idx===6) winCells.push(0,4,8); else winCells.push(2,4,6);
+      } else if (c===2) mul += 0.6;
     });
-    mul = Math.max(mul, 0);
-    const payout = Math.round(bet * mul);
-    return { payout, multiplier: mul, winningCells: [...new Set(winningCells)] };
+    mul = Math.min(mul, 50);
+    const pay = Math.round(bet * mul);
+    return { payout: pay, multiplier: mul, winCells: [...new Set(winCells)] };
   }
 
-  // big wins storage
-  function addBigWin(entry){
-    bigWins.unshift(entry);
-    if (bigWins.length > 200) bigWins = bigWins.slice(0,200);
-    safeSetItem('localBigWins', JSON.stringify(bigWins));
+  // UI and storage helpers
+  function refreshUI(){
+    balanceEl.textContent = `${balance} ₽`;
+    vaultEl.textContent = `${vault} ₽`;
     renderBigWins();
   }
 
   function renderBigWins(){
-    bigWinsListEl.innerHTML = '';
-    if (!bigWins || bigWins.length === 0) {
-      bigWinsListEl.innerHTML = '<div style="color:var(--muted);padding:8px">Пока нет больших выигрышей</div>';
-      return;
-    }
-    bigWins.slice(0,50).forEach(it => {
-      const el = document.createElement('div'); el.className = 'bigwin-item';
-      const left = document.createElement('div'); left.className = 'bigwin-left';
-      const em = document.createElement('div'); em.className = 'bigwin-emoji'; em.textContent = it.emoji || '🎉';
-      const info = document.createElement('div');
-      const n = document.createElement('div'); n.className = 'bigwin-nick'; n.textContent = it.nick;
-      const meta = document.createElement('div'); meta.style.fontSize='12px'; meta.style.color='var(--muted)'; meta.textContent = new Date(it.ts).toLocaleString();
-      info.appendChild(n); info.appendChild(meta);
-      left.appendChild(em); left.appendChild(info);
-      const right = document.createElement('div'); right.className = 'bigwin-amount'; right.textContent = `+${it.amount} ₽`;
-      el.appendChild(left); el.appendChild(right);
-      bigWinsListEl.appendChild(el);
+    bigListEl.innerHTML = '';
+    if (!bigWins || bigWins.length === 0){ bigListEl.innerHTML = '<div style="color:var(--muted);padding:8px">Пока нет больших выигрышей</div>'; return; }
+    bigWins.slice(0,50).forEach(it=>{
+      const row = document.createElement('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.padding='8px'; row.style.borderBottom='1px solid rgba(255,255,255,0.02)';
+      const left = document.createElement('div'); left.style.display='flex'; left.style.gap='8px'; left.style.alignItems='center';
+      const em = document.createElement('div'); em.textContent = it.emoji || '🎉'; em.style.fontSize = '18px';
+      const info = document.createElement('div'); const n=document.createElement('div'); n.style.fontWeight='700'; n.textContent = it.nick;
+      const t = document.createElement('div'); t.style.fontSize='12px'; t.style.color='var(--muted)'; t.textContent = new Date(it.ts).toLocaleString();
+      info.appendChild(n); info.appendChild(t); left.appendChild(em); left.appendChild(info);
+      const right = document.createElement('div'); right.style.color='var(--accent)'; right.textContent = `+${it.amount} ₽`;
+      row.appendChild(left); row.appendChild(right); bigListEl.appendChild(row);
     });
   }
 
-  // FX wrappers for different levels
-  function smallWinFX(cx, cy){
-    spawnParticles(cx, cy, 40, 80, 10);
-    playWinSound('small');
-  }
-  function bigWinFX(cx, cy){
-    spawnParticles(cx, cy, 120, 220, 18, ['#ffd166','#fff59d','#60a5fa','#b4f8c8']);
-    flash(260);
-    playWinSound('big');
-    showWinBadge(0);
-  }
-  function hugeWinFX(cx, cy){
-    spawnParticles(cx, cy, 260, 320, 26, ['#ffd166','#fff59d','#6ee7b7','#60a5fa','#f472b6']);
-    flash(420);
-    playWinSound('huge');
-    showWinBadge(0);
-    // extra fireworks: radial bursts
-    for (let i=0;i<6;i++){
-      setTimeout(()=> spawnParticles(cx, cy, 60 + i*10, 260, 22, ['#ffd166','#60a5fa','#f472b6']), i*160);
-    }
-  }
-
-  // particle spawner using fxLoop
-  const particles = [];
-  let fxRunning = false;
-  function spawnParticles(x,y,count=40,spread=120,power=12,colors){
-    for (let i=0;i<count;i++){
-      particles.push({
-        x: x + (Math.random()-0.5)*spread,
-        y: y + (Math.random()-0.5)*spread,
-        vx: (Math.random()-0.5)*power,
-        vy: -Math.random()*power - 2,
-        r: Math.random()*8+3,
-        life: 0,
-        ttl: 80 + Math.floor(Math.random()*120),
-        col: (colors && colors[Math.floor(Math.random()*colors.length)]) || ['#ffd166','#6ee7b7','#60a5fa','#f472b6'][Math.floor(Math.random()*4)]
-      });
-    }
-    if (!fxRunning) fxTick();
-  }
-
-  function fxTick(){
-    fxRunning = true;
-    ctx.clearRect(0,0,W,H);
-    for (let i=particles.length-1;i>=0;i--){
-      const p = particles[i];
-      p.life++; p.vy += 0.32; p.x += p.vx; p.y += p.vy;
-      const alpha = Math.max(0, 1 - p.life / p.ttl);
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = p.col;
-      ctx.beginPath();
-      ctx.ellipse(p.x, p.y, p.r, p.r*0.6, p.life*0.03, 0, Math.PI*2);
-      ctx.fill();
-      if (p.life > p.ttl || p.y > H + 50) particles.splice(i,1);
-    }
-    ctx.globalAlpha = 1;
-    if (particles.length>0) requestAnimationFrame(fxTick);
-    else fxRunning = false;
-  }
-
-  // small helper to spawn from cells centers
-  function spawnFromCells(indices, baseCount=40, intensity=1){
-    const slots = Array.from(gridEl.children);
-    if (!indices || indices.length===0){
-      const rect = gridEl.getBoundingClientRect();
-      spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2, baseCount, 180, 14);
-      return;
-    }
-    indices.forEach(idx => {
-      const s = slots[idx];
-      if (!s) return;
-      const r = s.getBoundingClientRect();
-      spawnParticles(r.left + r.width/2, r.top + r.height/2, Math.max(12, Math.floor(baseCount / indices.length)), 80 + intensity*10, 10 + intensity*3);
-    });
-  }
-
-  // seed view
-  function seedView(){
-    const base = Array.from({length:SLOT_COUNT}, (_,i) => EMOJI_POOL[(i*2)%EMOJI_POOL.length]);
-    animateGrid(base);
-  }
-  seedView();
-
-  // update UI state
-  function refreshUI(){
-    updateBalanceUI();
-    updateVaultUI();
-    freeSpinsEl.textContent = freeSpins;
-    boostCountEl.textContent = boostCount;
-    streakEl.textContent = streak;
-    loyaltyEl.textContent = `${Math.min(10, Math.floor(streak/3)*2)}%`;
+  function addBigWin(rec){
+    bigWins.unshift(rec);
+    if (bigWins.length > 200) bigWins = bigWins.slice(0,200);
+    localStorage.setItem('localBigWins', JSON.stringify(bigWins));
     renderBigWins();
   }
-  refreshUI();
 
-  // spin logic
-  function getBet(){
-    let b = Math.floor(Number(betInput.value) || 0);
-    if (b < 1) b = 1;
-    if (b > balance) b = balance;
-    betInput.value = b;
-    return b;
+  // effects helpers
+  function flash(duration=240){
+    const overlay = document.createElement('div');
+    overlay.style.position='fixed'; overlay.style.inset='0'; overlay.style.pointerEvents='none';
+    overlay.style.background='radial-gradient(circle at 50% 30%, rgba(255,245,220,0.95), rgba(255,245,220,0.4) 10%, transparent 30%)';
+    overlay.style.zIndex='110'; overlay.style.opacity='0';
+    document.body.appendChild(overlay);
+    requestAnimationFrame(()=> overlay.style.opacity='1');
+    setTimeout(()=> { overlay.style.opacity='0'; setTimeout(()=> overlay.remove(), 200); }, duration);
   }
 
-  function runSpin(useFree=false){
-    let bet = getBet();
-    if (useFree && freeSpins > 0){
-      bet = 0;
-      freeSpins--; safeSetItem('freeSpins', String(freeSpins));
-    } else {
-      if (bet > balance) { alert('Недостаточно средств'); return; }
-      balance -= bet; safeSetItem('balance', String(balance));
-    }
-    refreshUI();
+  function showBadge(amount){
+    winBadge.innerHTML = `BIG WIN<div style="font-size:16px;font-weight:700;margin-top:6px">+${amount} ₽</div>`;
+    winBadge.classList.add('show');
+    setTimeout(()=> winBadge.classList.remove('show'), 2400);
+  }
+
+  // sound
+  function playWin(level='small'){
+    if (!audioCtx) return;
+    if (level==='small') tone(880,0.06,'sine',0.05);
+    else if (level==='big'){ tone(540,0.14,'triangle',0.11); tone(1300,0.12,'sine',0.08); }
+    else { tone(420,0.26,'sawtooth',0.14); tone(1100,0.22,'sine',0.12); }
+  }
+
+  // spin flow
+  function runSpin(){
+    let bet = Math.floor(Number(betInput.value) || 0);
+    if (bet < 1) bet = 1;
+    if (bet > balance){ alert('Недостаточно средств'); return; }
+    balance -= bet; localStorage.setItem('balance', String(balance)); refreshUI();
     spinBtn.disabled = true;
 
-    // generate result with bias from global luck and boosters
-    const luck = 1 + Math.min(0.5, Math.log( (Number(onlineEl.textContent) || 1) + 1 ) * 0.06);
-    const favor = Math.min(0.28*(luck-1), 0.45) * (dynSelect.value === 'high' ? 1.6 : (dynSelect.value === 'low' ? 0.7 : 1));
+    const luck = 1 + (Math.log((Number(onlineEl.textContent) || 1)+1) * 0.05);
+    const favor = Math.min(0.28*(luck-1), 0.45);
     const arr = [];
     for (let i=0;i<SLOT_COUNT;i++){
-      if (i>0 && Math.random() < favor) {
-        if (Math.random() < 0.68) arr.push(arr[i-1]);
-        else arr.push(arr[Math.floor(Math.random()*i)]);
-      } else arr.push(EMOJI_POOL[Math.floor(Math.random()*EMOJI_POOL.length)]);
+      if (i>0 && Math.random() < favor){
+        if (Math.random() < 0.68) arr.push(arr[i-1]); else arr.push(arr[Math.floor(Math.random()*i)]);
+      } else arr.push(EMOJI[Math.floor(Math.random()*EMOJI.length)]);
     }
 
     animateGrid(arr);
 
-    const lineResults = computeLineScores(arr);
-    const payoutObj = payoutForBet(bet, lineResults);
-    let payout = payoutObj.payout;
-    // apply booster multiplier
-    if (boostCount > 0) {
-      payout = Math.round(payout * 1.5);
-      boostCount = Math.max(0, boostCount - 1);
-      safeSetItem('boostCount', String(boostCount));
-    }
+    const lines = computeLines(arr);
+    const p = payout(bet, lines);
 
     setTimeout(()=>{
-      if (payout > 0) { balance += payout; safeSetItem('balance', String(balance)); }
-      const net = payout - bet;
-      // display text
-      if (net > 0) {
-        scoreText.textContent = `BIG WIN! +${net} ₽  (пayout ${payout} ₽)`;
-      } else if (net === 0) {
-        scoreText.textContent = `Ничья — вернули ${payout} ₽`;
-      } else {
-        scoreText.textContent = `Проигрыш ${-net} ₽`;
-      }
-      scoreText.classList.remove('pop'); void scoreText.offsetWidth; scoreText.classList.add('pop');
+      if (p.payout > 0){ balance += p.payout; localStorage.setItem('balance', String(balance)); }
+      const net = p.payout - bet;
+      if (net > 0) scoreEl.textContent = `BIG WIN! +${net} ₽  (payout ${p.payout} ₽)`;
+      else if (net === 0) scoreEl.textContent = `Ничья — ${p.payout} ₽`;
+      else scoreEl.textContent = `Проигрыш ${-net} ₽`;
+      scoreEl.classList.remove('pop'); void scoreEl.offsetWidth; scoreEl.classList.add('pop');
 
-      // determine effect level
       const rect = gridEl.getBoundingClientRect();
-      if (net >= HUGE_WIN_NET_MIN) {
-        hugeWinFX(rect.left + rect.width/2, rect.top + rect.height/2);
-        showWinBadge(net);
-      } else if (net >= BIG_WIN_NET_MIN) {
-        bigWinFX(rect.left + rect.width/2, rect.top + rect.height/2);
-        showWinBadge(net);
-      } else if (net > 0) {
-        smallWinFX(rect.left + rect.width/2, rect.top + rect.height/2);
+      if (net >= 800){
+        spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2, 260, 320, 26, ['#ffd166','#fff59d','#6ee7b7','#60a5fa','#f472b6']);
+        flash(420); playWin('huge'); showBadge(net);
+      } else if (net >= 200){
+        spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2, 120, 220, 18);
+        flash(260); playWin('big'); showBadge(net);
+      } else if (net > 0){
+        spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2, 40, 120, 12);
+        playWin('small');
       }
 
-      // save big win entry if notable
-      if (net >= 50) {
-        addBigWin({ nick: nickInput.value || nick, emoji: lineResults.find(l=>l.bestCount>=3)?.bestEmoji || arr[4], amount: net, bet, payout, multiplier: payout / Math.max(1, bet), ts: Date.now() });
-      }
+      animateGrid(arr, p.winCells);
 
-      // small cashback accumulation to vault (loyalty)
-      const loyalty = Math.min(0.10, Math.floor(streak/3)*0.02); // e.g. 2% per 3-day streak up to 10%
-      const cashback = Math.floor(Math.abs(net) * loyalty);
-      vault += cashback; safeSetItem('vault', String(vault));
-      safeSetItem('balance', String(balance));
-      refreshUI();
+      if (net >= 50) addBigWin({ nick: nickInput.value || nick, emoji: lines.find(l=>l.bestCount>=3)?.emoji || arr[4], amount: net, bet, payout: p.payout, multiplier: p.multiplier, ts: Date.now() });
 
       spinBtn.disabled = false;
+      refreshUI();
     }, 640);
   }
 
-  // bonuses & purchases
-  document.getElementById('buyBoost').addEventListener('click', ()=>{
-    const price = 5000;
-    if (balance < price) return alert('Недостаточно средств');
-    if (!confirm(`Купить Booster x1.5 (5 спинов) за ${price} ₽?`)) return;
-    balance -= price; boostCount += 5;
-    safeSetItem('boostCount', String(boostCount));
-    safeSetItem('balance', String(balance));
-    refreshUI();
-  });
-
-  document.getElementById('grantFreeBtn').addEventListener('click', ()=>{
-    // small free gift to test: 1 free spin, costs nothing
-    freeSpins += 1; safeSetItem('freeSpins', String(freeSpins)); refreshUI();
-  });
-
-  freeSpinBtn.addEventListener('click', ()=>{
-    if (freeSpins <= 0) return alert('Free spins отсутствуют');
-    runSpin(true);
-  });
-
-  boostBtn.addEventListener('click', ()=>{
-    if (boostCount <= 0) return alert('Booster не активен');
-    // using boost consumes automatically in runSpin
-    alert('Booster будет применён автоматически к следующему спину');
-  });
-
-  spinBtn.addEventListener('click', ()=> runSpin(false));
-
-  // daily dice with streak and min 100
-  document.getElementById('dailyBtn').addEventListener('click', ()=>{
-    const now = Date.now();
-    const day = 24*60*60*1000;
-    if (now - lastDaily < day) {
-      const rem = day - (now - lastDaily);
-      alert('Кубик можно бросить через: ' + Math.ceil(rem/3600000) + ' ч');
-      return;
-    }
-    const roll = Math.floor(Math.random()*6) + 1;
-    const reward = 100 * roll;
-    balance += reward; safeSetItem('balance', String(balance));
-    // streak logic: if lastDaily within 48h, increment, else reset
-    if (now - lastDaily <= (48*60*60*1000)) streak += 1; else streak = 1;
-    lastDaily = now;
-    safeSetItem('lastDaily', String(lastDaily));
-    safeSetItem('streak', String(streak));
-    // reward free spins every 3-day streak
-    if (streak % 3 === 0) { freeSpins += 1; safeSetItem('freeSpins', String(freeSpins)); }
-    // also give boosted chance occasionally
-    if (roll >= 5) { boostCount += 1; safeSetItem('boostCount', String(boostCount)); }
-
+  // daily dice
+  function canDaily(){ const last = Number(localStorage.getItem('lastDaily') || 0); return (Date.now() - last) >= 24*60*60*1000; }
+  dailyBtn.addEventListener('click', ()=>{
+    if (!canDaily()){ alert('Кубик доступен раз в 24 часа'); return; }
+    const roll = Math.floor(Math.random()*6)+1; const reward = 100*roll;
+    balance += reward; localStorage.setItem('balance', String(balance));
+    localStorage.setItem('lastDaily', String(Date.now()));
+    addBigWin({ nick: nickInput.value || nick, emoji: '🎲', amount: reward, bet:0, payout:reward, multiplier:0, ts: Date.now() });
     const rect = gridEl.getBoundingClientRect();
-    hugeWinFX(rect.left + rect.width/2, rect.top + rect.height/2);
-    addBigWin({ nick: nickInput.value || nick, emoji: '🎲', amount: reward, bet: 0, payout: reward, multiplier: 0, ts: Date.now() });
-
+    spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2, 160, 220, 18);
+    flash(300); playWin('big'); showBadge(reward);
     refreshUI();
-    alert(`Выпало ${roll} — +${reward} ₽. Стрик: ${streak} дней`);
+    alert(`Выпало ${roll} — +${reward} ₽`);
   });
 
-  // clear big wins
-  clearBigWinsBtn.addEventListener('click', ()=> { if (!confirm('Очистить локальный список больших выигрышей?')) return; bigWins = []; localStorage.removeItem('localBigWins'); renderBigWins(); });
-
-  // clear bonuses (for testing)
-  clearBonusesBtn.addEventListener('click', ()=> {
-    if (!confirm('Сбросить бонусы и прогресс?')) return;
-    freeSpins = 0; boostCount = 0; streak = 0; lastDaily = 0;
-    safeSetItem('freeSpins','0'); safeSetItem('boostCount','0'); safeSetItem('streak','0'); safeSetItem('lastDaily','0');
-    refreshUI();
-  });
-
-  // save nick
-  saveNickBtn.addEventListener('click', ()=>{
-    nick = nickInput.value || 'Player';
-    safeSetItem('nick', nick);
-    alert('Ник сохранён: ' + nick);
-  });
-
-  // helper for effects thresholds
-  const HUGE_WIN_NET_MIN = 800;
-
-  // spawn particle wrapper to compute center and call FX
-  function spawnFromCells(indices, base, intensity){
-    const slots = Array.from(gridEl.children);
-    if (!indices || indices.length === 0) {
-      const rect = gridEl.getBoundingClientRect();
-      spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2, base, 160, 14);
-      return;
-    }
-    indices.forEach(idx=>{
-      const s = slots[idx];
-      if (!s) return;
-      const r = s.getBoundingClientRect();
-      spawnParticles(r.left + r.width/2, r.top + r.height/2, Math.max(20, Math.floor(base/indices.length)), 80 + intensity*10, 10 + intensity*3);
-    });
-  }
-
-  // expose animate and seed
-  refreshUI();
-
-  // play a tiny startup sound
-  setTimeout(()=> { playWinSound('small'); }, 300);
-
-  // convenience: ensure canvas size follows viewport
-  function resizeFX(){ W = fxCanvas.width = innerWidth; H = fxCanvas.height = innerHeight; }
-  window.addEventListener('resize', resizeFX); resizeFX();
-
-  // helper to spawnParticles (declared earlier in code block scope)
-  function spawnParticles(x,y,count,spread,power,colors){
-    // call fx function above
-    const evt = new CustomEvent('spawn', { detail: { x,y,count,spread,power,colors }});
-    // fallback to direct call
-    for (let i=0;i<count;i++){
-      particles.push({
-        x: x + (Math.random()-0.5)*spread,
-        y: y + (Math.random()-0.5)*spread,
-        vx: (Math.random()-0.5)*power,
-        vy: -Math.random()*power - 2,
-        r: Math.random()*8+3,
-        life: 0,
-        ttl: 80 + Math.floor(Math.random()*120),
-        col: (colors && colors[Math.floor(Math.random()*colors.length)]) || ['#ffd166','#6ee7b7','#60a5fa','#f472b6'][Math.floor(Math.random()*4)]
-      });
-    }
-    if (!fxRunning) fxTick();
-  }
-
-  // reuse earlier particle arrays
-  const particles = [];
-  let fxRunning = false;
-  function fxTick(){
-    fxRunning = true;
-    ctx.clearRect(0,0,W,H);
-    for (let i=particles.length-1;i>=0;i--){
-      const p = particles[i];
-      p.life++; p.vy += 0.32; p.x += p.vx; p.y += p.vy;
-      const alpha = Math.max(0, 1 - p.life / p.ttl);
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = p.col;
-      ctx.beginPath();
-      ctx.ellipse(p.x, p.y, p.r, p.r*0.6, p.life*0.03, 0, Math.PI*2);
-      ctx.fill();
-      if (p.life > p.ttl || p.y > H + 50) particles.splice(i,1);
-    }
-    ctx.globalAlpha = 1;
-    if (particles.length>0) requestAnimationFrame(fxTick); else fxRunning=false;
-  }
-
-  // animateGrid helper used earlier
-  function animateGrid(arr, winIndices=[]){
-    const slots = Array.from(gridEl.children);
-    slots.forEach((s,i)=>{
-      s.className = 'slot enter';
-      s.style.setProperty('--delay', `${(i%COLS)*0.04}s`);
-      s.textContent = arr[i] || '❔';
-      const onEnd = () => {
-        s.classList.remove('enter'); s.removeEventListener('animationend', onEnd);
-        if (winIndices.includes(i)){ s.classList.add('win'); setTimeout(()=> s.classList.remove('win'), 1200); }
-      };
-      s.addEventListener('animationend', onEnd);
-    });
-  }
-
-  // override previous definitions for computeLineScores/payoutFromLines used above
-  function computeLineScores(gridArr){
-    const lines = [];
-    // rows
-    for (let r=0;r<ROWS;r++){
-      const vals = [];
-      for (let c=0;c<COLS;c++) vals.push(gridArr[r*COLS + c]);
-      lines.push(vals);
-    }
-    // cols
-    for (let c=0;c<COLS;c++){
-      const vals=[];
-      for (let r=0;r<ROWS;r++) vals.push(gridArr[r*COLS + c]);
-      lines.push(vals);
-    }
-    // diags
-    lines.push([gridArr[0], gridArr[4], gridArr[8]]);
-    lines.push([gridArr[2], gridArr[4], gridArr[6]]);
-    return lines.map(values=>{
-      const freq = {}; values.forEach(v=>freq[v]=(freq[v]||0)+1);
-      const bestCount = Math.max(...Object.values(freq));
-      const bestEmoji = Object.keys(freq).find(k=>freq[k]===bestCount);
-      return { values, bestCount, bestEmoji };
-    });
-  }
-
-  function payoutForBet(bet, lineResults){
-    let mul = 0;
-    const winningCells = [];
-    lineResults.forEach((lr, li)=>{
-      if (lr.bestCount >= 3) {
-        if (lr.bestCount === 3) mul += 3;
-        else if (lr.bestCount === 4) mul += 6;
-        else mul += 12;
-        // compute indices depending on line index
-        if (li < 3){ const r = li; for (let c=0;c<COLS;c++) winningCells.push(r*COLS + c); }
-        else if (li < 6){ const c = li - 3; for (let r=0;r<ROWS;r++) winningCells.push(r*COLS + c); }
-        else if (li === 6) winningCells.push(0,4,8); else if (li === 7) winningCells.push(2,4,6);
-      } else if (lr.bestCount === 2) {
-        mul += 0.6;
-      }
-    });
-    mul = Math.min(mul, 50);
-    const payout = Math.round(bet * mul);
-    return { payout, multiplier: mul, winningCells: [...new Set(winningCells)] };
-  }
-
-  function addBigWin(entry){
-    bigWins.unshift(entry);
-    if (bigWins.length > 200) bigWins = bigWins.slice(0,200);
-    safeSetItem('localBigWins', JSON.stringify(bigWins));
-    renderBigWins();
-  }
-
-  function renderBigWins(){
-    bigWinsListEl.innerHTML = '';
-    if (!bigWins || bigWins.length === 0){
-      bigWinsListEl.innerHTML = '<div style="color:var(--muted);padding:8px">Пока нет больших выигрышей</div>';
-      return;
-    }
-    bigWins.slice(0,50).forEach(it=>{
-      const div = document.createElement('div'); div.className='bigwin-item';
-      const left = document.createElement('div'); left.className='bigwin-left';
-      const em = document.createElement('div'); em.className='bigwin-emoji'; em.textContent = it.emoji || '🎉';
-      const info = document.createElement('div'); const n=document.createElement('div'); n.className='bigwin-nick'; n.textContent = it.nick;
-      const meta = document.createElement('div'); meta.style.fontSize='12px'; meta.style.color='var(--muted)'; meta.textContent = new Date(it.ts).toLocaleString();
-      info.appendChild(n); info.appendChild(meta); left.appendChild(em); left.appendChild(info);
-      const right = document.createElement('div'); right.className='bigwin-amount'; right.textContent = `+${it.amount} ₽`;
-      div.appendChild(left); div.appendChild(right); bigWinsListEl.appendChild(div);
-    });
-  }
-
-  // Load stored bigWins
-  let bigWins = JSON.parse(localStorage.getItem('localBigWins') || '[]');
-  renderBigWins();
+  // bindings
+  spinBtn.addEventListener('click', ()=> { try{ if (audioCtx && audioCtx.state==='suspended') audioCtx.resume(); }catch(e){}; runSpin(); });
+  minBtn.addEventListener('click', ()=> betInput.value = 1);
+  halfBtn.addEventListener('click', ()=> betInput.value = Math.max(1, Math.floor(balance/2)));
+  maxBtn.addEventListener('click', ()=> betInput.value = balance);
+  saveNickBtn.addEventListener('click', ()=> { nick = nickInput.value || 'Player'; localStorage.setItem('nick', nick); alert('Ник сохранён'); });
+  clearBigBtn.addEventListener('click', ()=> { if (!confirm('Очистить список больших выигрышей?')) return; bigWins=[]; localStorage.removeItem('localBigWins'); renderBigWins(); });
 
   // initial UI
-  function refreshUI(){
-    updateBalanceUI();
-    updateVaultUI();
-    freeSpinsEl.textContent = freeSpins;
-    boostCountEl.textContent = boostCount;
-    streakEl.textContent = streak;
-    loyaltyEl.textContent = `${Math.min(10, Math.floor(streak/3)*2)}%`;
-  }
   refreshUI();
-
-  // bind remaining UI
-  document.getElementById('saveNickBtn').addEventListener('click', ()=>{
-    nick = nickInput.value || 'Player';
-    safeSetItem('nick', nick);
-    alert('Ник сохранён');
-  });
-
-  document.getElementById('minBet').addEventListener('click', ()=> betInput.value = 1);
-  document.getElementById('halfBet').addEventListener('click', ()=> betInput.value = Math.max(1, Math.floor(balance/2)));
-  document.getElementById('maxBet').addEventListener('click', ()=> betInput.value = balance);
-
-  // link spin with UI buttons already set above (spinBtn etc.)
-
-  // ensure canvas context vars
-  let ctx = fxCanvas.getContext('2d');
-
-  // final tiny adjustments
-  updateBalanceUI();
-  updateVaultUI();
-  renderBigWins();
+  setInterval(()=> { const n = Math.max(1, Math.floor(Math.random()*12)+2); onlineEl.textContent = n; luckEl.textContent = (1 + 0.06 * Math.log(n + 1)).toFixed(2); }, 4200);
 
   </script>
 </body>
