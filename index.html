@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Emoji Flux — анимированный прототип</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <header class="topbar">
+    <div class="brand">Emoji Flux</div>
+    <div class="controls">
+      <label class="nickwrap">
+        <input id="nick" placeholder="NewPlayer" maxlength="20" aria-label="Nickname">
+      </label>
+      <button id="startBtn" class="btn-primary" aria-label="Запустить поток">Запустить поток</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="field">
+      <div class="panel">
+        <div class="flow-area" id="flowArea" aria-live="polite" aria-atomic="true">
+          <!-- 7 слотов эмодзи -->
+          <div class="slots" id="stream"></div>
+        </div>
+
+        <div class="result" id="result" aria-hidden="false">
+          <div class="score" id="scoreText">Нажмите «Запустить поток»</div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="stat">Онлайн: <span id="online">0</span></div>
+      <div class="stat">Глоб. удача: <span id="luck">1.00</span></div>
+      <div class="leaderboard">
+        <h3>Рейтинг</h3>
+        <ol id="leaders"></ol>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Optional: Firebase (compat) для простоты; подставьте свой config в app.js -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
