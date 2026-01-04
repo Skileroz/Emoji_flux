@@ -1,29 +1,31 @@
+```html name=index.html
 <!doctype html>
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Emoji Flux</title>
+  <title>Emoji Flux — Immediate Results, Themes & Purchases</title>
   <style>
     :root{
       --bg1:#071029; --bg2:#0b1830;
       --card: rgba(255,255,255,0.02);
       --accent:#ffd166; --muted:#bcd3ea;
       --slot-size:90px; --slot-gap:12px;
+      --ui-font: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0; font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
-      color:var(--muted); background: linear-gradient(180deg,var(--bg1),var(--bg2));
+      margin:0; font-family:var(--ui-font); color:var(--muted);
+      background: linear-gradient(180deg,var(--bg1),var(--bg2));
       -webkit-font-smoothing:antialiased; display:flex;flex-direction:column;align-items:center;padding:18px;
     }
 
-    header{width:100%;max-width:980px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .brand{font-weight:700;color:var(--accent)}
-    .controls{display:flex;gap:10px;align-items:center}
+    header{width:100%;max-width:1200px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .brand{font-weight:800;color:var(--accent)}
+    .controls{display:flex;gap:12px;align-items:center}
 
-    .panel{width:100%;max-width:980px;background:var(--card);border-radius:12px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,0.6)}
+    .panel{width:100%;max-width:1200px;background:var(--card);border-radius:12px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,0.6)}
     .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
     .score{font-weight:700;padding:6px 10px;border-radius:10px;background:rgba(255,255,255,0.02)}
 
@@ -41,7 +43,8 @@
     .actions{display:flex;gap:12px;justify-content:center;margin-top:12px}
     button{padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),#ffb86b);cursor:pointer;font-weight:700;color:#08101a}
 
-    aside{width:360px;display:flex;flex-direction:column;gap:12px;margin-top:12px}
+    main{display:flex;gap:18px;width:100%;max-width:1200px;align-items:flex-start}
+    aside{width:380px;display:flex;flex-direction:column;gap:12px;margin-top:12px}
     .aside-section{background:var(--card);padding:12px;border-radius:10px}
     .muted{color:var(--muted);font-size:0.92rem}
     .balance{font-weight:800;color:var(--accent)}
@@ -51,26 +54,42 @@
     .purchased{opacity:0.6}
 
     canvas#confetti{position:fixed;left:0;top:0;pointer-events:none;z-index:120}
+    select, input[type="text"], input[type="number"]{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+    label.small{font-size:0.92rem;color:var(--muted);margin-right:8px}
+    .theme-preview{font-size:20px;opacity:0.95}
+    @media (max-width:980px){ main{flex-direction:column} aside{width:100%} }
   </style>
 </head>
 <body>
   <canvas id="confetti"></canvas>
 
   <header>
-    <div class="brand">Emoji Flux — Passive Bonuses</div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="brand">Emoji Flux</div>
+      <div style="display:flex;flex-direction:column">
+        <div style="font-size:0.85rem;color:var(--muted)">Тема (Emoji‑сеты)</div>
+        <select id="themeSelect" aria-label="Выбор темы">
+          <option value="fruits">Fruits (по умолчанию)</option>
+          <option value="cyberpunk">Киберпанк</option>
+          <option value="magic">Магия</option>
+          <option value="crypto">Крипто</option>
+        </select>
+      </div>
+    </div>
+
     <div class="controls">
-      <input id="nick" placeholder="Никнейм" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit" />
+      <input id="nick" placeholder="Никнейм" />
       <button id="saveNick">Сохранить</button>
     </div>
   </header>
 
-  <main style="display:flex;gap:18px;align-items:flex-start;width:100%;max-width:1200px">
+  <main>
     <section style="flex:1">
       <div class="panel">
         <div class="top">
           <div style="display:flex;gap:12px;align-items:center">
-            <label class="muted">Ставка</label>
-            <input id="bet" type="number" value="20" min="1" style="width:110px;padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit" />
+            <label class="small">Ставка</label>
+            <input id="bet" type="number" value="20" min="1" style="width:110px" />
             <button id="min">Мин</button>
             <button id="half">1/2</button>
             <button id="max">Макс</button>
@@ -82,7 +101,7 @@
 
         <div class="actions">
           <button id="spin">Spin</button>
-          <button id="daily">Daily Dice</button>
+          <button id="daily">Ежедневный кубик</button>
           <button id="reset">Сброс</button>
         </div>
       </div>
@@ -92,11 +111,12 @@
       <div class="aside-section">
         <div>Баланс: <span class="balance" id="balance">—</span></div>
         <div class="muted">Vault: <span id="vault">0</span></div>
+        <div style="margin-top:8px">Текущая тема: <span id="themePreview" class="theme-preview"></span></div>
       </div>
 
       <div class="aside-section">
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-weight:700">Магазин (вариант 2 — пассивные бонусы)</div>
+          <div style="font-weight:700">Магазин (пассивные бонусы)</div>
         </div>
         <div class="purchase" id="buyLeftWrap">
           <div>Left Side Module — 120000 ₽</div>
@@ -111,7 +131,7 @@
           <button id="buyBooster">Купить</button>
         </div>
         <div class="purchase" id="buyInsuranceWrap">
-          <div>Insurance (возвращает 50% ставки при проигрыше) — 50000 ₽</div>
+          <div>Insurance (50% при проигрыше) — 50000 ₽</div>
           <button id="buyInsurance">Купить</button>
         </div>
       </div>
@@ -127,202 +147,209 @@
   </main>
 
   <script>
-  // --- Single-file game with purchases (variant 2) and fix for fast-click bug ---
-  // Config
-  const EMOJI = ['🍒','🍋','🔔','⭐','🍀','💎','7️⃣','🍎','⚡️'];
-  const ROWS = 3, COLS = 3, SLOT_COUNT = ROWS * COLS;
+  // Immediate-result version with themes, 11% repeat chance and passive purchases (variant 2).
+  (function(){
+    // CONFIG
+    const THEMES = {
+      fruits: ['🍒','🍋','🔔','⭐','🍀'],
+      cyberpunk: ['🤖','⚡️','💾','🦾','🕶️'],
+      magic: ['🔮','📜','🧪','🧙','🕯️'],
+      crypto: ['🚀','🌙','📈','💎','🦁']
+    };
+    const DEFAULT_THEME = localStorage.getItem('theme') || 'fruits';
+    const ROWS = 3, COLS = 3, SLOT_COUNT = ROWS * COLS;
+    const REPEAT_CHANCE = 0.11; // 11%
+    const COST_SIDE = 120000, COST_BOOSTER = 120000, COST_INSURANCE = 50000;
 
-  // DOM refs
-  const gridEl = document.getElementById('grid');
-  const balanceEl = document.getElementById('balance');
-  const vaultEl = document.getElementById('vault');
-  const scoreEl = document.getElementById('score');
-  const bigListEl = document.getElementById('bigList');
-  const confettiCanvas = document.getElementById('confetti');
+    // DOM
+    const gridEl = document.getElementById('grid');
+    const balanceEl = document.getElementById('balance');
+    const vaultEl = document.getElementById('vault');
+    const scoreEl = document.getElementById('score');
+    const bigListEl = document.getElementById('bigList');
+    const confettiCanvas = document.getElementById('confetti');
 
-  const nickInput = document.getElementById('nick');
-  const saveNickBtn = document.getElementById('saveNick');
-  const spinBtn = document.getElementById('spin');
-  const dailyBtn = document.getElementById('daily');
-  const resetBtn = document.getElementById('reset');
-  const betInput = document.getElementById('bet');
-  const minBtn = document.getElementById('min');
-  const halfBtn = document.getElementById('half');
-  const maxBtn = document.getElementById('max');
-  const clearBigBtn = document.getElementById('clearBig');
+    const themeSelect = document.getElementById('themeSelect');
+    const themePreview = document.getElementById('themePreview');
 
-  // purchase buttons
-  const buyLeftBtn = document.getElementById('buyLeft');
-  const buyRightBtn = document.getElementById('buyRight');
-  const buyBoosterBtn = document.getElementById('buyBooster');
-  const buyInsuranceBtn = document.getElementById('buyInsurance');
+    const nickInput = document.getElementById('nick');
+    const saveNickBtn = document.getElementById('saveNick');
+    const spinBtn = document.getElementById('spin');
+    const dailyBtn = document.getElementById('daily');
+    const resetBtn = document.getElementById('reset');
+    const betInput = document.getElementById('bet');
+    const minBtn = document.getElementById('min');
+    const halfBtn = document.getElementById('half');
+    const maxBtn = document.getElementById('max');
+    const clearBigBtn = document.getElementById('clearBig');
 
-  // Costs
-  const COST_SIDE = 120000;
-  const COST_BOOSTER = 120000;
-  const COST_INSURANCE = 50000;
+    const buyLeftBtn = document.getElementById('buyLeft');
+    const buyRightBtn = document.getElementById('buyRight');
+    const buyBoosterBtn = document.getElementById('buyBooster');
+    const buyInsuranceBtn = document.getElementById('buyInsurance');
 
-  // State (persisted)
-  let nick = localStorage.getItem('nick') || 'Player';
-  nickInput.value = nick;
-  let balance = Number(localStorage.getItem('balance')) || 1000;
-  let vault = Number(localStorage.getItem('vault')) || 0;
-  let bigWins = JSON.parse(localStorage.getItem('localBigWins') || '[]');
+    // STATE (persist)
+    let theme = localStorage.getItem('theme') || DEFAULT_THEME;
+    let emojiPool = THEMES[theme] || THEMES.fruits;
 
-  // Purchases (persist)
-  let purchasedLeft = localStorage.getItem('purchasedLeft') === '1';
-  let purchasedRight = localStorage.getItem('purchasedRight') === '1';
-  let purchasedBooster = localStorage.getItem('purchasedBooster') === '1';
-  let purchasedInsurance = localStorage.getItem('purchasedInsurance') === '1';
+    let nick = localStorage.getItem('nick') || 'Player';
+    nickInput.value = nick;
 
-  // Prevent concurrent spins
-  let isSpinning = false;
+    let balance = Number(localStorage.getItem('balance')) || 1000;
+    let vault = Number(localStorage.getItem('vault')) || 0;
+    let bigWins = JSON.parse(localStorage.getItem('localBigWins') || '[]');
 
-  // --- Utility: save state safely ---
-  function safeSetItem(k,v){ try { localStorage.setItem(k,v); } catch(e) {} }
+    let purchasedLeft = localStorage.getItem('purchasedLeft') === '1';
+    let purchasedRight = localStorage.getItem('purchasedRight') === '1';
+    let purchasedBooster = localStorage.getItem('purchasedBooster') === '1';
+    let purchasedInsurance = localStorage.getItem('purchasedInsurance') === '1';
 
-  // --- Grid setup ---
-  function createGrid(){
-    gridEl.innerHTML = '';
-    for (let i=0;i<SLOT_COUNT;i++){
-      const slot = document.createElement('div');
-      slot.className = 'slot';
-      slot.textContent = EMOJI[i % EMOJI.length];
-      gridEl.appendChild(slot);
+    // protect against concurrent spins
+    let isSpinning = false;
+
+    // safe storage
+    function safeSetItem(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+
+    // --- confetti ---
+    const ctx = confettiCanvas.getContext('2d');
+    let W=0,H=0, parts=[], confettiAnimating=false;
+    function resize(){ W=confettiCanvas.width = innerWidth; H=confettiCanvas.height = innerHeight; }
+    addEventListener('resize', resize); resize();
+    function spawnConfetti(x,y,n,spread=120,power=14){
+      for (let i=0;i<n;i++){
+        parts.push({
+          x: x + (Math.random()-0.5)*spread,
+          y: y + (Math.random()-0.5)*spread,
+          vx:(Math.random()-0.5)*power,
+          vy: -Math.random()*power - 2,
+          r: Math.random()*10+4,
+          col: ['#ffd166','#6ee7b7','#60a5fa','#f472b6','#fff59d'][Math.floor(Math.random()*5)],
+          life:0, ttl: 80 + Math.floor(Math.random()*120)
+        });
+      }
+      if (!confettiAnimating) confettiLoop();
     }
-  }
-  createGrid();
+    function confettiLoop(){
+      confettiAnimating = true;
+      ctx.clearRect(0,0,W,H);
+      for (let i=parts.length-1;i>=0;i--){
+        const p = parts[i];
+        p.life++; p.vy += 0.35; p.x += p.vx; p.y += p.vy;
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.life*0.07);
+        ctx.fillStyle = p.col; ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r*0.6); ctx.restore();
+        if (p.y > H + 50 || p.life > p.ttl) parts.splice(i,1);
+      }
+      if (parts.length>0) requestAnimationFrame(confettiLoop); else confettiAnimating = false;
+    }
 
-  // --- Confetti (lightweight) ---
-  const ctx = confettiCanvas.getContext('2d');
-  let W=0,H=0, parts=[], animating=false;
-  function resize(){ W=confettiCanvas.width = innerWidth; H=confettiCanvas.height = innerHeight; }
-  addEventListener('resize', resize); resize();
+    // --- grid helpers ---
+    function createGrid(){
+      gridEl.innerHTML = '';
+      for (let i=0;i<SLOT_COUNT;i++){
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.textContent = emojiPool[i % emojiPool.length];
+        gridEl.appendChild(slot);
+      }
+    }
+    createGrid();
 
-  function spawnConfetti(x,y,n,spread=120,power=14){
-    for (let i=0;i<n;i++){
-      parts.push({
-        x: x + (Math.random()-0.5)*spread,
-        y: y + (Math.random()-0.5)*spread,
-        vx:(Math.random()-0.5)*power,
-        vy: -Math.random()*power - 2,
-        r: Math.random()*10+4,
-        col: ['#ffd166','#6ee7b7','#60a5fa','#f472b6','#fff59d'][Math.floor(Math.random()*5)],
-        life:0, ttl: 80 + Math.floor(Math.random()*120)
+    function animateGrid(values, winIndices=[]){
+      const slots = Array.from(gridEl.children);
+      slots.forEach((s,i)=>{
+        s.className = 'slot enter';
+        s.style.setProperty('--delay', `${(i%COLS)*0.04}s`);
+        s.textContent = values[i] || '❔';
+        const onEnd = () => {
+          s.classList.remove('enter');
+          s.removeEventListener('animationend', onEnd);
+          if (winIndices.includes(i)){
+            s.classList.add('win'); setTimeout(()=> s.classList.remove('win'), 1000);
+          }
+        };
+        s.addEventListener('animationend', onEnd);
       });
     }
-    if (!animating) confettiLoop();
-  }
-  function confettiLoop(){
-    animating = true;
-    ctx.clearRect(0,0,W,H);
-    for (let i=parts.length-1;i>=0;i--){
-      const p = parts[i];
-      p.life++; p.vy += 0.35; p.x += p.vx; p.y += p.vy;
-      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.life*0.07);
-      ctx.fillStyle = p.col; ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r*0.6); ctx.restore();
-      if (p.y > H + 50 || p.life > p.ttl) parts.splice(i,1);
-    }
-    if (parts.length>0) requestAnimationFrame(confettiLoop); else animating=false;
-  }
 
-  // --- Animate grid ---
-  function animateGrid(values, winIndices=[]){
-    const slots = Array.from(gridEl.children);
-    slots.forEach((s,i)=>{
-      s.className = 'slot enter';
-      s.style.setProperty('--delay', `${(i%COLS)*0.04}s`);
-      s.textContent = values[i] || '❔';
-      const onEnd = () => {
-        s.classList.remove('enter'); s.removeEventListener('animationend', onEnd);
-        if (winIndices.includes(i)){
-          s.classList.add('win'); setTimeout(()=> s.classList.remove('win'), 1000);
+    // --- lines & payouts ---
+    function computeLines(arr){
+      const lines = [];
+      for (let r=0;r<ROWS;r++) lines.push([arr[r*COLS], arr[r*COLS+1], arr[r*COLS+2]]);
+      for (let c=0;c<COLS;c++) lines.push([arr[c], arr[3+c], arr[6+c]]);
+      lines.push([arr[0],arr[4],arr[8]]);
+      lines.push([arr[2],arr[4],arr[6]]);
+      return lines.map(vals=>{
+        const freq={}; vals.forEach(v=> freq[v] = (freq[v]||0)+1);
+        const best = Math.max(...Object.values(freq));
+        const emoji = Object.keys(freq).find(k=>freq[k]===best);
+        return { vals, bestCount: best, emoji };
+      });
+    }
+
+    function payoutFromLines(bet, lineResults){
+      let totalMul = 0, winCells = [];
+      lineResults.forEach((lr, idx)=>{
+        const c = lr.bestCount;
+        if (c >= 3){
+          totalMul += (c === 3 ? 3 : (c === 4 ? 6 : 12));
+          if (idx < 3){ const r = idx; for (let cc=0; cc<COLS; cc++) winCells.push(r*COLS + cc); }
+          else if (idx < 6){ const cc = idx - 3; for (let rr=0; rr<ROWS; rr++) winCells.push(rr*COLS + cc); }
+          else if (idx === 6) winCells.push(0,4,8); else winCells.push(2,4,6);
+        } else if (c === 2) totalMul += 0.6;
+      });
+      totalMul = Math.min(totalMul, 50);
+      let passiveMultiplier = 1;
+      const sideCount = (purchasedLeft ? 1 : 0) + (purchasedRight ? 1 : 0);
+      passiveMultiplier += sideCount * 0.5;
+      if (purchasedBooster) passiveMultiplier *= 2;
+      const payout = Math.round(bet * totalMul * passiveMultiplier);
+      return { payout, net: payout - bet, totalMul, passiveMultiplier, winCells: [...new Set(winCells)] };
+    }
+
+    // ---------- RNG (11% repeat) ----------
+    function generateGrid(){
+      const online = Number(document.getElementById('online').textContent) || 1;
+      const favor = Math.min(0.28 * (Math.log(online + 1) * 0.05), 0.45);
+      const res = [];
+      for (let i=0;i<SLOT_COUNT;i++){
+        if (i>0 && Math.random() < REPEAT_CHANCE){
+          res.push(res[i-1]);
+          continue;
         }
-      };
-      s.addEventListener('animationend', onEnd);
-    });
-  }
-
-  // --- Lines & Payouts ---
-  function computeLines(arr){
-    const lines = [];
-    for (let r=0;r<ROWS;r++) lines.push([arr[r*COLS], arr[r*COLS+1], arr[r*COLS+2]]);
-    for (let c=0;c<COLS;c++) lines.push([arr[c], arr[3+c], arr[6+c]]);
-    lines.push([arr[0],arr[4],arr[8]]);
-    lines.push([arr[2],arr[4],arr[6]]);
-    return lines.map(vals=>{
-      const freq={}; vals.forEach(v=> freq[v] = (freq[v]||0)+1);
-      const best = Math.max(...Object.values(freq));
-      const emoji = Object.keys(freq).find(k=>freq[k]===best);
-      return { vals, bestCount: best, emoji };
-    });
-  }
-
-  function payoutFromLines(bet, lineResults){
-    let totalMul = 0, winCells = [];
-    lineResults.forEach((lr, idx)=>{
-      const c = lr.bestCount;
-      if (c >= 3){
-        totalMul += (c === 3 ? 3 : (c === 4 ? 6 : 12));
-        if (idx < 3){ const r = idx; for (let cc=0; cc<COLS; cc++) winCells.push(r*COLS + cc); }
-        else if (idx < 6){ const cc = idx - 3; for (let rr=0; rr<ROWS; rr++) winCells.push(rr*COLS + cc); }
-        else if (idx === 6) winCells.push(0,4,8); else winCells.push(2,4,6);
-      } else if (c === 2) totalMul += 0.6;
-    });
-    totalMul = Math.min(totalMul, 50);
-    // compute passive multiplier from purchases
-    let passiveMultiplier = 1;
-    const sideCount = (purchasedLeft ? 1 : 0) + (purchasedRight ? 1 : 0);
-    passiveMultiplier += sideCount * 0.5; // each side adds +0.5 to multiplier
-    if (purchasedBooster) passiveMultiplier *= 2; // booster doubles payouts
-    const payout = Math.round(bet * totalMul * passiveMultiplier);
-    return { payout, net: payout - bet, totalMul, passiveMultiplier, winCells: [...new Set(winCells)] };
-  }
-
-  // RNG
-  function generateGrid(){
-    const online = Number(document.getElementById('online').textContent) || 1;
-    const favor = Math.min(0.28 * (Math.log(online + 1) * 0.05), 0.45);
-    const res = [];
-    for (let i=0;i<SLOT_COUNT;i++){
-      if (i>0 && Math.random() < favor){
-        if (Math.random() < 0.68) res.push(res[i-1]);
-        else res.push(res[Math.floor(Math.random()*i)]);
-      } else res.push(EMOJI[Math.floor(Math.random()*EMOJI.length)]);
+        if (i>0 && Math.random() < favor){
+          if (Math.random() < 0.68) res.push(res[i-1]);
+          else res.push(res[Math.floor(Math.random()*i)]);
+        } else {
+          res.push(emojiPool[Math.floor(Math.random()*emojiPool.length)]);
+        }
+      }
+      return res;
     }
-    return res;
-  }
 
-  // --- Spin flow with race protection ---
-  function runSpin(){
-    if (isSpinning) return; // protect
-    isSpinning = true;
-    spinBtn.disabled = true;
+    // ---------- RUN SPIN (IMMEDIATE RESULT) ----------
+    function runSpin(){
+      if (isSpinning) return; // protect, though result is immediate
+      isSpinning = true;
+      spinBtn.disabled = true;
 
-    let bet = Math.floor(Number(betInput.value) || 0);
-    if (bet < 1) bet = 1;
-    if (bet > balance){ alert('Недостаточно средств'); isSpinning = false; spinBtn.disabled = false; return; }
+      let bet = Math.floor(Number(betInput.value) || 0);
+      if (bet < 1) bet = 1;
+      if (bet > balance){ alert('Недостаточно средств'); isSpinning = false; spinBtn.disabled = false; return; }
 
-    // Immediately deduct bet atomically and save
-    balance -= bet;
-    safeSetItem('balance', String(balance));
-    refreshUI();
+      // Immediately deduct bet and persist
+      balance -= bet; safeSetItem('balance', String(balance));
+      refreshUI();
 
-    scoreEl.textContent = 'Крутится…';
+      // compute result immediately (no waiting)
+      const grid = generateGrid();
+      const lines = computeLines(grid);
+      const payoutObj = payoutFromLines(bet, lines);
 
-    const grid = generateGrid();
-    animateGrid(grid);
-
-    const lineResults = computeLines(grid);
-    const payoutObj = payoutFromLines(bet, lineResults);
-
-    setTimeout(()=>{
-      // compute final after passive multiplier applied
+      // apply payout or insurance immediately
       if (payoutObj.payout > 0){
         balance += payoutObj.payout;
         safeSetItem('balance', String(balance));
       } else {
-        // loss case: if insurance purchased, return half the bet
         if (purchasedInsurance){
           const refund = Math.floor(bet / 2);
           balance += refund;
@@ -330,185 +357,181 @@
         }
       }
 
+      // prepare and show immediate textual result
       const net = payoutObj.payout - bet;
-      if (net > 0) scoreEl.textContent = `BIG WIN! +${net} ₽ (payout ${payoutObj.payout} ₽)`;
-      else if (net === 0) scoreEl.textContent = `Push — returned ${payoutObj.payout} ₽`;
-      else scoreEl.textContent = purchasedInsurance ? `Loss — восстановлена половина ставки` : `Loss ${-net} ₽`;
+      if (net > 0) scoreEl.textContent = `BIG WIN! +${net} ₽ (выплата ${payoutObj.payout} ₽)`;
+      else if (net === 0) scoreEl.textContent = `Ничья — возвращено ${payoutObj.payout} ₽`;
+      else scoreEl.textContent = purchasedInsurance ? `Проигрыш — восстановлена половина ставки` : `Проигрыш ${-net} ₽`;
 
-      // special effects
-      const rect = gridEl.getBoundingClientRect();
-      if (net >= 800) {
-        spawnConfetti(rect.left + rect.width/2, rect.top + rect.height/2, 260);
-        showBadge(net);
-      } else if (net >= 200) {
-        spawnConfetti(rect.left + rect.width/2, rect.top + rect.height/2, 120);
-        showBadge(net);
-      } else if (net > 0) {
-        spawnConfetti(rect.left + rect.width/2, rect.top + rect.height/2, 48);
-      }
-
-      // highlight winners
+      // animate grid (visual), highlight winners
       animateGrid(grid, payoutObj.winCells);
 
-      // store big win if notable
+      // visual FX
+      const rect = gridEl.getBoundingClientRect();
+      if (net >= 800) { spawnConfetti(rect.left + rect.width/2, rect.top + rect.height/2, 260); showBadge(net); }
+      else if (net >= 200) { spawnConfetti(rect.left + rect.width/2, rect.top + rect.height/2, 120); showBadge(net); }
+      else if (net > 0) { spawnConfetti(rect.left + rect.width/2, rect.top + rect.height/2, 48); }
+
+      // record bigWins if notable
       const actualNet = payoutObj.payout - bet;
       if (actualNet >= 50){
-        bigWins.unshift({ nick: nickInput.value || nick, emoji: lineResults.find(l=>l.bestCount>=3)?.emoji || grid[4], amount: actualNet, bet, payout: payoutObj.payout, ts: Date.now() });
+        bigWins.unshift({ nick: nickInput.value || nick, emoji: lines.find(l=>l.bestCount>=3)?.emoji || grid[4], amount: actualNet, bet, payout: payoutObj.payout, ts: Date.now() });
         if (bigWins.length > 200) bigWins = bigWins.slice(0,200);
         safeSetItem('localBigWins', JSON.stringify(bigWins));
       }
 
-      // done
+      // finalize
       isSpinning = false;
       spinBtn.disabled = false;
       refreshUI();
-    }, 700);
-  }
-
-  // --- Purchases: variant 2 (passive bonuses) ---
-  function updatePurchaseUI(){
-    buyLeftBtn.disabled = purchasedLeft || balance < COST_SIDE;
-    buyRightBtn.disabled = purchasedRight || balance < COST_SIDE;
-    buyBoosterBtn.disabled = purchasedBooster || balance < COST_BOOSTER;
-    buyInsuranceBtn.disabled = purchasedInsurance || balance < COST_INSURANCE;
-
-    document.getElementById('buyLeftWrap').classList.toggle('purchased', purchasedLeft);
-    document.getElementById('buyRightWrap').classList.toggle('purchased', purchasedRight);
-    document.getElementById('buyBoosterWrap').classList.toggle('purchased', purchasedBooster);
-    document.getElementById('buyInsuranceWrap').classList.toggle('purchased', purchasedInsurance);
-  }
-
-  buyLeftBtn.addEventListener('click', ()=>{
-    if (purchasedLeft) return;
-    if (balance < COST_SIDE) { alert('Недостаточно средств'); return; }
-    if (!confirm(`Купить Left Side Module за ${COST_SIDE} ₽?`)) return;
-    balance -= COST_SIDE; safeSetItem('balance', String(balance));
-    purchasedLeft = true; safeSetItem('purchasedLeft','1');
-    updatePurchaseUI(); refreshUI();
-    alert('Left Side Module приобретён — ваши выигрыши увеличены.');
-  });
-
-  buyRightBtn.addEventListener('click', ()=>{
-    if (purchasedRight) return;
-    if (balance < COST_SIDE) { alert('Недостаточно средств'); return; }
-    if (!confirm(`Купить Right Side Module за ${COST_SIDE} ₽?`)) return;
-    balance -= COST_SIDE; safeSetItem('balance', String(balance));
-    purchasedRight = true; safeSetItem('purchasedRight','1');
-    updatePurchaseUI(); refreshUI();
-    alert('Right Side Module приобретён — ваши выигрыши увеличены.');
-  });
-
-  buyBoosterBtn.addEventListener('click', ()=>{
-    if (purchasedBooster) return;
-    if (balance < COST_BOOSTER) { alert('Недостаточно средств'); return; }
-    if (!confirm(`Купить Booster (x2 к выплатам) за ${COST_BOOSTER} ₽?`)) return;
-    balance -= COST_BOOSTER; safeSetItem('balance', String(balance));
-    purchasedBooster = true; safeSetItem('purchasedBooster','1');
-    updatePurchaseUI(); refreshUI();
-    alert('Booster активирован — выплаты будут умножены.');
-  });
-
-  buyInsuranceBtn.addEventListener('click', ()=>{
-    if (purchasedInsurance) return;
-    if (balance < COST_INSURANCE) { alert('Недостаточно средств'); return; }
-    if (!confirm(`Купить Insurance (возвращает 50% ставки при проигрыше) за ${COST_INSURANCE} ₽?`)) return;
-    balance -= COST_INSURANCE; safeSetItem('balance', String(balance));
-    purchasedInsurance = true; safeSetItem('purchasedInsurance','1');
-    updatePurchaseUI(); refreshUI();
-    alert('Insurance куплена — при проигрыше вы получите половину ставки обратно.');
-  });
-
-  // --- Daily dice & helpers ---
-  function canDaily(){ const last = Number(localStorage.getItem('lastDaily') || 0); return (Date.now() - last) >= 24*60*60*1000; }
-  dailyBtn.addEventListener('click', ()=>{
-    if (!canDaily()){ alert('Кубик можно бросать раз в 24 часа'); return; }
-    const roll = Math.floor(Math.random()*6)+1;
-    const reward = 100 * roll;
-    balance += reward; safeSetItem('balance', String(balance));
-    safeSetItem('lastDaily', String(Date.now()));
-    bigWins.unshift({ nick: nickInput.value || nick, emoji: '🎲', amount: reward, bet:0, payout:reward, ts: Date.now() });
-    if (bigWins.length > 200) bigWins = bigWins.slice(0,200);
-    safeSetItem('localBigWins', JSON.stringify(bigWins));
-    const rect = gridEl.getBoundingClientRect();
-    spawnConfetti(rect.left + rect.width/2, rect.top + rect.height/2, 120);
-    scoreEl.textContent = `Кубик: ${roll} — +${reward} ₽`;
-    refreshUI();
-    alert(`Выпало ${roll} — +${reward} ₽`);
-  });
-
-  // --- Reset / UI ---
-  resetBtn.addEventListener('click', ()=> { if (!confirm('Сбросить локальные данные?')) return; localStorage.clear(); location.reload(); });
-
-  function refreshUI(){
-    balanceEl.textContent = `${balance} ₽`;
-    vaultEl.textContent = `${vault} ₽`;
-    renderBigWins();
-    updatePurchaseUI();
-  }
-
-  function renderBigWins(){
-    bigListEl.innerHTML = '';
-    if (!bigWins || bigWins.length === 0){
-      bigListEl.innerHTML = '<div style="color:var(--muted);padding:8px">Пока нет больших выигрышей</div>';
-      return;
     }
-    bigWins.slice(0,50).forEach(it=>{
-      const row = document.createElement('div');
-      row.style.display='flex'; row.style.justifyContent='space-between'; row.style.padding='8px'; row.style.borderBottom='1px solid rgba(255,255,255,0.02)';
-      const left = document.createElement('div'); left.style.display='flex'; left.style.gap='8px'; left.style.alignItems='center';
-      const em = document.createElement('div'); em.textContent = it.emoji || '🎉'; em.style.fontSize='18px';
-      const info = document.createElement('div'); const n = document.createElement('div'); n.style.fontWeight='700'; n.textContent = it.nick;
-      const t = document.createElement('div'); t.style.fontSize='12px'; t.style.color='var(--muted)'; t.textContent = new Date(it.ts).toLocaleString();
-      info.appendChild(n); info.appendChild(t); left.appendChild(em); left.appendChild(info);
-      const right = document.createElement('div'); right.style.color='var(--accent)'; right.textContent = `+${it.amount} ₽`;
-      row.appendChild(left); row.appendChild(right); bigListEl.appendChild(row);
+
+    // ---------- purchases ----------
+    function updatePurchaseUI(){
+      buyLeftBtn.disabled = purchasedLeft || balance < COST_SIDE;
+      buyRightBtn.disabled = purchasedRight || balance < COST_SIDE;
+      buyBoosterBtn.disabled = purchasedBooster || balance < COST_BOOSTER;
+      buyInsuranceBtn.disabled = purchasedInsurance || balance < COST_INSURANCE;
+
+      document.getElementById('buyLeftWrap').classList.toggle('purchased', purchasedLeft);
+      document.getElementById('buyRightWrap').classList.toggle('purchased', purchasedRight);
+      document.getElementById('buyBoosterWrap').classList.toggle('purchased', purchasedBooster);
+      document.getElementById('buyInsuranceWrap').classList.toggle('purchased', purchasedInsurance);
+    }
+
+    buyLeftBtn.addEventListener('click', ()=>{
+      if (purchasedLeft) return;
+      if (balance < COST_SIDE) { alert('Недостаточно средств'); return; }
+      if (!confirm(`Купить Left Side Module за ${COST_SIDE} ₽?`)) return;
+      balance -= COST_SIDE; safeSetItem('balance', String(balance));
+      purchasedLeft = true; safeSetItem('purchasedLeft','1');
+      updatePurchaseUI(); refreshUI(); alert('Left Side Module приобретён.');
     });
-  }
 
-  // show big badge
-  function showBadge(amount){
-    const badge = document.createElement('div');
-    badge.style.position = 'fixed';
-    badge.style.left = '50%';
-    badge.style.top = '8%';
-    badge.style.transform = 'translateX(-50%)';
-    badge.style.zIndex = 999;
-    badge.style.fontFamily = "'Bebas Neue', sans-serif";
-    badge.style.fontSize = '44px';
-    badge.style.color = '#08101a';
-    badge.style.padding = '12px 24px';
-    badge.style.borderRadius = '12px';
-    badge.style.background = 'linear-gradient(90deg,#fff1c8,#ffd166)';
-    badge.textContent = `BIG WIN +${amount} ₽`;
-    document.body.appendChild(badge);
-    setTimeout(()=> { badge.style.transition = 'opacity .4s'; badge.style.opacity = '0'; setTimeout(()=> badge.remove(), 420); }, 1800);
-  }
+    buyRightBtn.addEventListener('click', ()=>{
+      if (purchasedRight) return;
+      if (balance < COST_SIDE) { alert('Недостаточно средств'); return; }
+      if (!confirm(`Купить Right Side Module за ${COST_SIDE} ₽?`)) return;
+      balance -= COST_SIDE; safeSetItem('balance', String(balance));
+      purchasedRight = true; safeSetItem('purchasedRight','1');
+      updatePurchaseUI(); refreshUI(); alert('Right Side Module приобретён.');
+    });
 
-  // confetti helper wrapper
-  function spawnConfetti(x,y,n){ spawnConfetti(x,y,n,140,16); }
+    buyBoosterBtn.addEventListener('click', ()=>{
+      if (purchasedBooster) return;
+      if (balance < COST_BOOSTER) { alert('Недостаточно средств'); return; }
+      if (!confirm(`Купить Booster (x2 payouts) за ${COST_BOOSTER} ₽?`)) return;
+      balance -= COST_BOOSTER; safeSetItem('balance', String(balance));
+      purchasedBooster = true; safeSetItem('purchasedBooster','1');
+      updatePurchaseUI(); refreshUI(); alert('Booster активирован.');
+    });
 
-  // Bind UI
-  spinBtn.addEventListener('click', ()=> { runSpin(); });
-  minBtn.addEventListener('click', ()=> betInput.value = 1);
-  halfBtn.addEventListener('click', ()=> betInput.value = Math.max(1, Math.floor(balance/2)));
-  maxBtn.addEventListener('click', ()=> betInput.value = balance);
-  saveNickBtn.addEventListener('click', ()=> { nick = nickInput.value || 'Player'; safeSetItem('nick', nick); alert('Ник сохранён'); });
-  clearBigBtn.addEventListener('click', ()=> { if (!confirm('Очистить список больших выигрышей?')) return; bigWins = []; safeSetItem('localBigWins','[]'); renderBigWins(); });
+    buyInsuranceBtn.addEventListener('click', ()=>{
+      if (purchasedInsurance) return;
+      if (balance < COST_INSURANCE) { alert('Недостаточно средств'); return; }
+      if (!confirm(`Купить Insurance (50% при проигрыше) за ${COST_INSURANCE} ₽?`)) return;
+      balance -= COST_INSURANCE; safeSetItem('balance', String(balance));
+      purchasedInsurance = true; safeSetItem('purchasedInsurance','1');
+      updatePurchaseUI(); refreshUI(); alert('Insurance куплена.');
+    });
 
-  // simulated online update
-  setInterval(()=> {
-    const n = Math.max(1, Math.floor(Math.random()*12)+2);
-    document.getElementById('online').textContent = n;
-    document.getElementById('luck').textContent = (1 + 0.06 * Math.log(n + 1)).toFixed(2);
-  }, 3500);
+    // ---------- daily ----------
+    function canDaily(){ const last = Number(localStorage.getItem('lastDaily') || 0); return (Date.now() - last) >= 24*60*60*1000; }
+    dailyBtn.addEventListener('click', ()=>{
+      if (!canDaily()){ alert('Кубик доступен раз в 24 часа'); return; }
+      const roll = Math.floor(Math.random()*6)+1;
+      const reward = 100 * roll;
+      balance += reward; safeSetItem('balance', String(balance));
+      safeSetItem('lastDaily', String(Date.now()));
+      bigWins.unshift({ nick: nickInput.value || nick, emoji: '🎲', amount: reward, bet:0, payout:reward, ts: Date.now() });
+      if (bigWins.length > 200) bigWins = bigWins.slice(0,200);
+      safeSetItem('localBigWins', JSON.stringify(bigWins));
+      const rect = gridEl.getBoundingClientRect();
+      spawnConfetti(rect.left + rect.width/2, rect.top + rect.height/2, 120);
+      scoreEl.textContent = `Кубик: ${roll} — +${reward} ₽`;
+      refreshUI();
+      alert(`Выпало ${roll} — +${reward} ₽`);
+    });
 
-  // initial seed
-  (function seed(){
-    const base = Array.from({length:SLOT_COUNT}, (_,i) => EMOJI[(i*2) % EMOJI.length]);
-    animateGrid(base);
-    refreshUI();
+    // ---------- theme ----------
+    function applyTheme(t){
+      theme = t;
+      emojiPool = THEMES[theme] || THEMES.fruits;
+      safeSetItem('theme', theme);
+      themePreview.textContent = emojiPool.join(' ');
+      // reseed grid visually
+      const base = Array.from({length:SLOT_COUNT}, (_,i) => emojiPool[i % emojiPool.length]);
+      animateGrid(base);
+    }
+    themeSelect.value = theme;
+    applyTheme(theme);
+    themeSelect.addEventListener('change', (e)=> applyTheme(e.target.value));
+
+    // ---------- misc UI ----------
+    function refreshUI(){
+      balanceEl.textContent = `${balance} ₽`;
+      vaultEl.textContent = `${vault} ₽`;
+      renderBigWins();
+      updatePurchaseUI();
+    }
+
+    function renderBigWins(){
+      bigListEl.innerHTML = '';
+      if (!bigWins || bigWins.length === 0){
+        bigListEl.innerHTML = '<div style="color:var(--muted);padding:8px">Пока нет больших выигрышей</div>';
+        return;
+      }
+      bigWins.slice(0,50).forEach(it=>{
+        const row = document.createElement('div');
+        row.style.display='flex'; row.style.justifyContent='space-between'; row.style.padding='8px'; row.style.borderBottom='1px solid rgba(255,255,255,0.02)';
+        const left = document.createElement('div'); left.style.display='flex'; left.style.gap='8px'; left.style.alignItems='center';
+        const em = document.createElement('div'); em.textContent = it.emoji || '🎉'; em.style.fontSize='18px';
+        const info = document.createElement('div'); const n = document.createElement('div'); n.style.fontWeight='700'; n.textContent = it.nick;
+        const t = document.createElement('div'); t.style.fontSize='12px'; t.style.color='var(--muted)'; t.textContent = new Date(it.ts).toLocaleString();
+        info.appendChild(n); info.appendChild(t); left.appendChild(em); left.appendChild(info);
+        const right = document.createElement('div'); right.style.color='var(--accent)'; right.textContent = `+${it.amount} ₽`;
+        row.appendChild(left); row.appendChild(right); bigListEl.appendChild(row);
+      });
+    }
+
+    function showBadge(amount){
+      const badge = document.createElement('div');
+      badge.style.position='fixed'; badge.style.left='50%'; badge.style.top='8%'; badge.style.transform='translateX(-50%)';
+      badge.style.zIndex='999'; badge.style.fontFamily="'Bebas Neue', sans-serif"; badge.style.fontSize='44px';
+      badge.style.color='#08101a'; badge.style.padding='12px 24px'; badge.style.borderRadius='12px';
+      badge.style.background='linear-gradient(90deg,#fff1c8,#ffd166)';
+      badge.textContent = `BIG WIN +${amount} ₽`;
+      document.body.appendChild(badge);
+      setTimeout(()=> { badge.style.transition='opacity .45s'; badge.style.opacity='0'; setTimeout(()=> badge.remove(), 480); }, 1800);
+    }
+
+    // ---------- bindings ----------
+    spinBtn.addEventListener('click', ()=> runSpin());
+    minBtn.addEventListener('click', ()=> betInput.value = 1);
+    halfBtn.addEventListener('click', ()=> betInput.value = Math.max(1, Math.floor(balance/2)));
+    maxBtn.addEventListener('click', ()=> betInput.value = balance);
+    saveNickBtn.addEventListener('click', ()=> { nick = nickInput.value || 'Player'; safeSetItem('nick', nick); alert('Ник сохранён'); });
+    clearBigBtn.addEventListener('click', ()=> { if (!confirm('Очистить список больших выигрышей?')) return; bigWins=[]; safeSetItem('localBigWins','[]'); renderBigWins(); });
+
+    resetBtn.addEventListener('click', ()=> { if (!confirm('Сбросить локальные данные?')) return; localStorage.clear(); location.reload(); });
+
+    // simulated online
+    setInterval(()=> {
+      const n = Math.max(1, Math.floor(Math.random()*12)+2);
+      document.getElementById('online').textContent = n;
+      document.getElementById('luck').textContent = (1 + 0.06 * Math.log(n + 1)).toFixed(2);
+    }, 3500);
+
+    // initial seed & UI
+    (function seed(){
+      const base = Array.from({length:SLOT_COUNT}, (_,i) => emojiPool[i % emojiPool.length]);
+      animateGrid(base);
+      refreshUI();
+    })();
+
+    // expose for debugging
+    window._emojiFlux = { runSpin, applyTheme };
   })();
-
   </script>
 </body>
 </html>
